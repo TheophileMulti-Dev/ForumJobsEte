@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <g id="BG_BASE">
+    <rect id="BG" width="1920" height="1080" style="fill: #fff;"/>
+    <polygon id="BG_PLAN" points="1560 150 1560 360 1380 360 1380 300 1140 300 1140 360 1080 360 1080 300 1020 300 1020 360 960 360 960 300 900 300 900 360 660 360 660 300 480 300 480 690 300 690 300 450 60 450 60 900 300 900 480 900 660 900 660 450 1140 450 1140 900 1380 900 1380 450 1560 450 1560 540 1860 540 1860 150 1560 150" style="fill: #ccc;"/>
+  </g>
+  <g id="Zone_A" data-name="Zone A">
+    <rect x="1140" y="300" width="240" height="600" style="fill: #8cc63f; opacity: .32;"/>
+  </g>
+  <g id="Zone_B" data-name="Zone B">
+    <rect x="1560" y="270" width="300" height="270" style="fill: #29abe2; opacity: .32;"/>
+  </g>
+  <g id="Zone_C" data-name="Zone C">
+    <polygon id="BG-2" data-name="BG" points="480 300 480 690 300 690 300 450 60 450 60 900 300 900 480 900 660 900 660 300 480 300" style="fill: #ed1c24; opacity: .32;"/>
+    <rect id="STAND_C01" x="45" y="825" width="90" height="60" transform="translate(945 765) rotate(90)" style="fill: #fff;"/>
+    <rect id="STAND_C02" x="45" y="735" width="90" height="60" transform="translate(855 675) rotate(90)" style="fill: #ccc;"/>
+    <rect id="STAND_C03" x="45" y="645" width="90" height="60" transform="translate(765 585) rotate(90)" style="fill: #fff;"/>
+    <rect id="STAND_C04" x="45" y="555" width="90" height="60" transform="translate(675 495) rotate(90)" style="fill: #ccc;"/>
+    <rect id="STAND_C05" x="45" y="465" width="90" height="60" transform="translate(585 405) rotate(90)" style="fill: #fff;"/>
+    <rect id="STAND_C06" x="120" y="840" width="90" height="60" style="fill: #ccc;"/>
+    <rect id="STAND_C07" x="210" y="840" width="90" height="60" style="fill: #fff;"/>
+    <rect id="STAND_C08" x="150" y="450" width="90" height="60" style="fill: #ccc;"/>
+    <rect id="STAND_C09" x="225" y="645" width="90" height="60" transform="translate(945 405) rotate(90)" style="fill: #fff;"/>
+    <rect id="STAND_C10" x="225" y="555" width="90" height="60" transform="translate(855 315) rotate(90)" style="fill: #ccc;"/>
+    <rect id="STAND_C11" x="225" y="465" width="90" height="60" transform="translate(765 225) rotate(90)" style="fill: #fff;"/>
+    <rect id="STAND_C12" x="300" y="840" width="60" height="60" style="fill: #ccc;"/>
+    <rect id="STAND_C13" x="360" y="840" width="60" height="60" style="fill: #fff;"/>
+    <rect id="STAND_C14" x="420" y="840" width="60" height="60" style="fill: #ccc;"/>
+    <rect id="STAND_C15" x="300" y="690" width="60" height="60" style="fill: #ccc;"/>
+    <rect id="STAND_C16" x="360" y="690" width="60" height="60" style="fill: #fff;"/>
+    <rect id="STAND_C17" x="420" y="690" width="60" height="60" style="fill: #ccc;"/>
+    <rect id="STAND_C18" x="480" y="840" width="90" height="60" style="fill: #fff;"/>
+    <rect id="STAND_C19" x="570" y="840" width="90" height="60" style="fill: #ccc;"/>
+    <rect id="STAND_C20" x="480" y="690" width="60" height="60" style="fill: #fff;"/>
+    <rect id="STAND_C21" x="465" y="615" width="90" height="60" transform="translate(1155 135) rotate(90)" style="fill: #ccc;"/>
+    <rect id="STAND_C22" x="465" y="525" width="90" height="60" transform="translate(1065 45) rotate(90)" style="fill: #fff;"/>
+    <rect id="STAND_C23" x="480" y="450" width="60" height="60" transform="translate(990 -30) rotate(90)" style="fill: #ccc;"/>
+    <rect id="STAND_C24" x="480" y="300" width="180" height="60" style="fill: #fff;"/>
+    <rect id="STAND_C25" x="570" y="480" width="120" height="60" transform="translate(1140 -120) rotate(90)" style="fill: #ccc;"/>
+    <rect id="STAND_C26" x="585" y="585" width="90" height="60" transform="translate(1245 -15) rotate(90)" style="fill: #fff;"/>
+    <rect id="STAND_C27" x="585" y="675" width="90" height="60" transform="translate(1335 75) rotate(90)" style="fill: #ccc;"/>
+  </g>
+  <g id="Zone_D" data-name="Zone D">
+    <rect x="1560" y="150" width="300" height="120" style="fill: #f7931e; opacity: .32;"/>
+  </g>
+  <g id="Contour">
+    <line x1="300" y1="900" x2="300" y2="840" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="300" y1="690" x2="300" y2="750" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="480" y1="690" x2="480" y2="750" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="480" y1="900" x2="480" y2="840" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="300" y1="690" x2="480" y2="690" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="480" y1="300" x2="480" y2="690" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="660" y1="300" x2="480" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="60" y1="900" x2="660" y2="900" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="60" y1="450" x2="60" y2="900" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="300" y1="450" x2="60" y2="450" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="300" y1="690" x2="300" y2="450" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="660" y1="300" x2="660" y2="360" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="660" y1="900" x2="660" y2="450" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="660" y1="360" x2="1140" y2="360" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="660" y1="450" x2="1140" y2="450" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="900" y1="360" x2="900" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="960" y1="360" x2="960" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="900" y1="300" x2="960" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1020" y1="360" x2="1020" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1080" y1="360" x2="1080" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1020" y1="300" x2="1080" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1140" y1="360" x2="1140" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1380" y1="300" x2="1140" y2="300" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1140" y1="450" x2="1140" y2="900" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1380" y1="900" x2="1140" y2="900" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1380" y1="450" x2="1380" y2="900" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1560" y1="450" x2="1380" y2="450" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1380" y1="300" x2="1380" y2="360" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1560" y1="360" x2="1380" y2="360" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1560" y1="450" x2="1560" y2="540" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1560" y1="360" x2="1560" y2="150" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1860" y1="150" x2="1560" y2="150" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1560" y1="270" x2="1860" y2="270" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1860" y1="150" x2="1860" y2="540" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1560" y1="540" x2="1860" y2="540" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+    <line x1="1710" y1="270" x2="1710" y2="150" style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  </g>
+  <g id="Routes" style="pointer-events: none;">
+  <!-- Routes depuis l'entrée (1140, 800) vers chaque stand -->
+  <!-- Chemin : Sortir zone verte → Haut → Descendre vers stands -->
+  
+  <!-- Zone C - Stands verticaux à gauche (y élevés) -->
+  <path id="ROUTE_STAND_C01" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 135,800 L 135,855" />
+  <circle id="MARKER_STAND_C01" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C01" class="route-marker" cx="135" cy="855" r="8" />
+  
+  <path id="ROUTE_STAND_C02" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 135,800 L 135,765" />
+  <circle id="MARKER_STAND_C02" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C02" class="route-marker" cx="135" cy="765" r="8" />
+  
+  <path id="ROUTE_STAND_C03" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 135,800 L 135,675" />
+  <circle id="MARKER_STAND_C03" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C03" class="route-marker" cx="135" cy="675" r="8" />
+  
+  <path id="ROUTE_STAND_C04" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 135,800 L 135,585" />
+  <circle id="MARKER_STAND_C04" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C04" class="route-marker" cx="135" cy="585" r="8" />
+  
+  <path id="ROUTE_STAND_C05" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 135,800 L 135,495" />
+  <circle id="MARKER_STAND_C05" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C05" class="route-marker" cx="135" cy="495" r="8" />
+  
+  <!-- Stands horizontaux en bas -->
+  <path id="ROUTE_STAND_C06" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 165,800 L 165,870" />
+  <circle id="MARKER_STAND_C06" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C06" class="route-marker" cx="165" cy="870" r="8" />
+  
+  <path id="ROUTE_STAND_C07" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 255,800 L 255,870" />
+  <circle id="MARKER_STAND_C07" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C07" class="route-marker" cx="255" cy="870" r="8" />
+  
+  <path id="ROUTE_STAND_C08" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 195,405 L 195,480" />
+  <circle id="MARKER_STAND_C08" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C08" class="route-marker" cx="195" cy="480" r="8" />
+  
+  <!-- Stands verticaux au milieu -->
+  <path id="ROUTE_STAND_C09" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 315,800 L 315,690" />
+  <circle id="MARKER_STAND_C09" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C09" class="route-marker" cx="315" cy="690" r="8" />
+  
+  <path id="ROUTE_STAND_C10" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 315,800 L 315,600" />
+  <circle id="MARKER_STAND_C10" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C10" class="route-marker" cx="315" cy="600" r="8" />
+  
+  <path id="ROUTE_STAND_C11" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 315,405 L 315,510" />
+  <circle id="MARKER_STAND_C11" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C11" class="route-marker" cx="315" cy="510" r="8" />
+  
+  <!-- Petits stands horizontaux -->
+  <path id="ROUTE_STAND_C12" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 330,800 L 330,870" />
+  <circle id="MARKER_STAND_C12" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C12" class="route-marker" cx="330" cy="870" r="8" />
+  
+  <path id="ROUTE_STAND_C13" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 390,800 L 390,870" />
+  <circle id="MARKER_STAND_C13" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C13" class="route-marker" cx="390" cy="870" r="8" />
+  
+  <path id="ROUTE_STAND_C14" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 450,800 L 450,870" />
+  <circle id="MARKER_STAND_C14" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C14" class="route-marker" cx="450" cy="870" r="8" />
+  
+  <path id="ROUTE_STAND_C15" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 330,800 L 330,720" />
+  <circle id="MARKER_STAND_C15" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C15" class="route-marker" cx="330" cy="720" r="8" />
+  
+  <path id="ROUTE_STAND_C16" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 390,800 L 390,720" />
+  <circle id="MARKER_STAND_C16" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C16" class="route-marker" cx="390" cy="720" r="8" />
+  
+  <path id="ROUTE_STAND_C17" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 450,800 L 450,720" />
+  <circle id="MARKER_STAND_C17" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C17" class="route-marker" cx="450" cy="720" r="8" />
+  
+  <!-- Stands à droite -->
+  <path id="ROUTE_STAND_C18" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 525,800 L 525,870" />
+  <circle id="MARKER_STAND_C18" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C18" class="route-marker" cx="525" cy="870" r="8" />
+  
+  <path id="ROUTE_STAND_C19" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 615,800 L 615,870" />
+  <circle id="MARKER_STAND_C19" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C19" class="route-marker" cx="615" cy="870" r="8" />
+  
+  <path id="ROUTE_STAND_C20" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,800 L 510,800 L 510,720" />
+  <circle id="MARKER_STAND_C20" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C20" class="route-marker" cx="510" cy="720" r="8" />
+  
+  <!-- Stands verticaux à droite -->
+  <path id="ROUTE_STAND_C21" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,660 L 555,660" />
+  <circle id="MARKER_STAND_C21" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C21" class="route-marker" cx="555" cy="660" r="8" />
+  
+  <path id="ROUTE_STAND_C22" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,570 L 555,570" />
+  <circle id="MARKER_STAND_C22" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C22" class="route-marker" cx="555" cy="570" r="8" />
+  
+  <path id="ROUTE_STAND_C23" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 570,405 L 570,480 L 540,480" />
+  <circle id="MARKER_STAND_C23" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C23" class="route-marker" cx="540" cy="480" r="8" />
+  
+  <path id="ROUTE_STAND_C24" class="route-line" d="M 1140,800 L 1265,800 L 1265,330 L 570,330" />
+  <circle id="MARKER_STAND_C24" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C24" class="route-marker" cx="570" cy="330" r="8" />
+  
+  <path id="ROUTE_STAND_C25" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 660,405 L 660,540 L 630,540" />
+  <circle id="MARKER_STAND_C25" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C25" class="route-marker" cx="630" cy="540" r="8" />
+  
+  <path id="ROUTE_STAND_C26" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 660,405 L 660,630 L 630,630" />
+  <circle id="MARKER_STAND_C26" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C26" class="route-marker" cx="630" cy="630" r="8" />
+  
+  <path id="ROUTE_STAND_C27" class="route-line" d="M 1140,800 L 1265,800 L 1265,405 L 660,405 L 660,720 L 630,720" />
+  <circle id="MARKER_STAND_C27" class="route-marker" cx="1140" cy="800" r="8" />
+  <circle id="END_MARKER_STAND_C27" class="route-marker" cx="630" cy="720" r="8" />
+</g>
+</svg>
