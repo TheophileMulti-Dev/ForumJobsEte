@@ -2,1849 +2,511 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Forum Jobs – Plan Interactif</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forum Jobs d'été 2026 - Pôle Agglo 21</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/shared.css">
   <style>
-    :root {
-      --vh: 1vh;
-    }
+    body { background: var(--bg-dark); color: white; overflow-x: hidden; }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #2a2a2a;
-      overflow: hidden;
-      height: calc(var(--vh, 1vh) * 100);
-    }
-
-    header {
-      background: #1a1a1a;
-      color: white;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      height: 60px;
-    }
-
-    header h1 {
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    nav {
-      display: flex;
-      gap: 10px;
-    }
-
-    nav button, nav a {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      background: #444;
-      color: white;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    nav button:hover, nav a:hover {
-      background: #555;
-    }
-
-    nav button.active {
-      background: white;
-      color: #1a1a1a;
-    }
-
-    main {
-      height: calc((var(--vh, 1vh) * 100) - 60px);
-      position: relative;
-    }
-
-    /* Vue Plan */
-    #plan-view {
-      width: 100%;
-      height: 100%;
+    /* ========== HERO ========== */
+    .hero {
+      min-height: auto;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 100px 24px 40px;
       position: relative;
       overflow: hidden;
-      background: #3a3a3a;
-      touch-action: none;
     }
 
-    #plan-container {
-      width: 100%;
-      height: 100%;
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(67,97,238,0.2), transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(247,37,133,0.12), transparent 60%),
+        radial-gradient(ellipse 50% 50% at 20% 90%, rgba(67,97,238,0.1), transparent 50%);
+    }
+
+    .hero-split {
       position: relative;
-      cursor: grab;
-      touch-action: none;
-    }
-
-    #plan-container.grabbing {
-      cursor: grabbing;
-    }
-
-    #plan-content {
-      position: absolute;
-      transform-origin: 0 0;
-      will-change: transform;
-    }
-
-    #plan-content.with-transition {
-      transition: transform 0.3s ease-out;
-    }
-
-    #plan-content svg {
-      display: block;
-      width: 1920px;
-      height: 1080px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      transition: transform 0.3s ease;
-    }
-
-    /* Stands cliquables */
-    [id^="STAND_"] {
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    [id^="STAND_"]:hover {
-      opacity: 0.7;
-      stroke: #ff6b6b;
-      stroke-width: 3;
-    }
-
-    [id^="STAND_"].selected {
-      fill: #4A90E2 !important;
-      stroke: #2563eb;
-      stroke-width: 4;
-    }
-
-    /* Contrôles */
-    .map-controls {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 100;
-    }
-
-    .map-controls button {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-      background: #1a1a1a;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      transition: all 0.2s;
-      display: flex;
+      z-index: 1;
+      max-width: 1200px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
       align-items: center;
-      justify-content: center;
     }
 
-    .map-controls button:hover {
-      background: #333;
-      transform: scale(1.1);
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-date {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 20px; border-radius: 40px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.8);
+      margin-bottom: 24px;
+      backdrop-filter: blur(10px);
     }
 
-    .map-controls button:active {
-      transform: scale(0.95);
+    .hero-date .dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: blink 2s ease-in-out infinite; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .hero h1 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 16px;
+      letter-spacing: -0.03em;
     }
 
-    /* Bouton Export PDF */
-    .export-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #4A90E2;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: all 0.2s;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, #4361ee, #f72585, #4cc9f0);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .export-btn:hover {
-      background: #357ABD;
+    .hero-subtitle {
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6; margin-bottom: 28px;
+    }
+
+    .hero-cta {
+      display: flex; gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-cta .btn-hero {
+      padding: 12px 28px; border-radius: 12px; font-size: 15px;
+      font-weight: 700; text-decoration: none;
+      transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px;
+    }
+
+    .btn-hero-primary {
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      color: white; border: none;
+      box-shadow: 0 4px 20px rgba(67,97,238,0.4);
+    }
+    .btn-hero-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(67,97,238,0.5);
+    }
+
+    .btn-hero-outline {
+      background: rgba(255,255,255,0.05);
+      color: white; border: 2px solid rgba(255,255,255,0.15);
+    }
+    .btn-hero-outline:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.3);
+      transform: translateY(-3px);
+    }
+
+    /* ========== HERO INFO CARDS (RIGHT SIDE) ========== */
+    .hero-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .hero-info-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    .hero-info-card:hover {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.18);
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
     }
 
-    .export-btn:active {
-      transform: translateY(0);
+    .hero-info-card .hi-icon {
+      font-size: 22px;
+      margin-bottom: 10px;
+      display: block;
     }
 
-    /* Tooltip flottant */
-    #stand-tooltip {
-      position: absolute;
-      background: white;
-      padding: 16px 20px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      z-index: 200;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
-      max-width: 300px;
-      min-width: 250px;
-    }
-
-    #stand-tooltip.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    #stand-tooltip h3 {
-      margin: 0 0 8px 0;
-      font-size: 18px;
-      color: #1a1a1a;
-    }
-
-    #stand-tooltip p {
-      margin: 4px 0;
-      color: #666;
-      font-size: 14px;
-    }
-
-    #stand-tooltip strong {
-      color: #1a1a1a;
-    }
-
-    #stand-tooltip .close-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 24px;
-      height: 24px;
-      border: none;
-      background: #eee;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-      line-height: 1;
-      transition: all 0.2s;
-      pointer-events: auto;
-    }
-
-    #stand-tooltip .close-btn:hover {
-      background: #ddd;
-    }
-
-    #stand-tooltip .action-btn {
-      margin-top: 10px;
-      padding: 8px 12px;
-      border: none;
-      background: #4A90E2;
+    .hero-info-card .hi-value {
+      font-size: 1.5rem;
+      font-weight: 800;
       color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
-      pointer-events: auto;
-      display: flex;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+
+    .hero-info-card .hi-label {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 80px 16px 32px; }
+      .hero-split {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .hero-content { text-align: center; }
+      .hero-cta { justify-content: center; }
+      .hero-info-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    }
+
+    /* ========== INFO SECTION ========== */
+    .info-section {
+      padding: 60px 24px;
+      position: relative;
+    }
+
+    .info-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .info-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 24px;
+      transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+
+    .info-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-3px);
+    }
+
+    .info-card-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 14px;
+    }
+
+    .info-card h3 {
+      font-size: 1.05rem; font-weight: 700;
+      margin-bottom: 6px; color: white;
+    }
+
+    .info-card p {
+      font-size: 0.85rem; line-height: 1.5;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .info-card .card-count {
+      font-size: 2rem; font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    /* ========== ZONE TAG ========== */
+    .zone-color-tag {
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      justify-content: center;
-    }
-
-    #stand-tooltip .action-btn:hover {
-      background: #357ABD;
-    }
-
-    /* Étiquettes des stands - AMÉLIORÉES */
-    .stand-label {
-      font-size: 11px;
-      font-weight: 600;
-      fill: #1a1a1a;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s;
-      text-anchor: middle;
-    }
-
-    .stand-label-bg {
-      fill: rgba(255, 255, 255, 0.95);
-      stroke: #4A90E2;
-      stroke-width: 1;
-      rx: 4;
-      ry: 4;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-    }
-
-    /* Les étiquettes restent cachées (sauf pour l'export PDF) */
-    /* .zoomed .stand-label,
-    .zoomed .stand-label-bg {
-      opacity: 1;
-    } */
-
-    /* Classe spéciale pour forcer l'affichage lors de l'export PDF */
-    .show-labels .stand-label,
-    .show-labels .stand-label-bg {
-      opacity: 1 !important;
-    }
-
-    .route-line {
-      stroke: #4A90E2;
-      stroke-width: 6;
-      stroke-dasharray: 15 10;
-      stroke-linecap: round;
-      fill: none;
-      opacity: 0;
-      transition: opacity 0.3s;
-      animation: dash 1s linear infinite;
-    }
-
-    .route-line.active {
-      opacity: 1;
-    }
-
-    .route-marker {
-      fill: #4A90E2;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .route-marker.active {
-      opacity: 1;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes dash {
-      to {
-        stroke-dashoffset: -25;
-      }
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        r: 8;
-        opacity: 1;
-      }
-      50% {
-        r: 12;
-        opacity: 0.5;
-      }
-    }
-
-    /* Vue Liste */
-    #list-view {
-      display: none;
-      height: 100%;
-      overflow-y: auto;
-      background: #f5f5f5;
-    }
-
-    #list-view.active {
-      display: block;
-    }
-
-    .list-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .search-bar {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .search-bar input {
-      flex: 1;
-      padding: 12px 16px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: all 0.2s;
-    }
-
-    .search-bar input:focus {
-      outline: none;
-      border-color: #4A90E2;
-    }
-
-    .filters {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .filter-group {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      padding: 8px 16px;
-      border: 2px solid #ddd;
-      border-radius: 20px;
-      background: white;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .filter-btn:hover {
-      border-color: #4A90E2;
-    }
-
-    .filter-btn.active {
-      background: #4A90E2;
-      color: white;
-      border-color: #4A90E2;
-    }
-
-    .stands-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .stand-item {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: all 0.2s;
-    }
-
-    .stand-item:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
-
-    .stand-item-header {
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .stand-item-info h3 {
-      margin: 0 0 4px 0;
-      font-size: 18px;
-      color: #1a1a1a;
-    }
-
-    .stand-item-info p {
-      margin: 0;
-      color: #666;
-      font-size: 14px;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      background: #4A90E2;
-      color: white;
-      border-radius: 12px;
+      padding: 4px 12px;
+      border-radius: 6px;
       font-size: 12px;
-      font-weight: 600;
-      margin-top: 8px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 12px;
     }
 
-    .expand-btn {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: #f5f5f5;
+    .zone-color-tag .zt-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    .expand-btn:hover {
-      background: #e5e5e5;
+    /* ========== ORGANISATEURS ========== */
+    .orga-section {
+      padding: 80px 24px;
+      position: relative;
     }
 
-    .expand-btn.expanded {
-      transform: rotate(180deg);
+    .section-header {
+      text-align: center; margin-bottom: 48px;
+      max-width: 600px; margin-left: auto; margin-right: auto;
     }
 
-    .stand-item-details {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-      padding: 0 16px;
+    .section-header .section-tag {
+      display: inline-flex; padding: 6px 16px;
+      border-radius: 20px; font-size: 13px; font-weight: 600;
+      background: rgba(67,97,238,0.15); color: #818cf8;
+      margin-bottom: 16px;
     }
 
-    .stand-item-details.expanded {
-      max-height: 500px;
-      padding: 0 16px 16px;
+    .section-header h2 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 800; margin-bottom: 12px;
+      letter-spacing: -0.02em;
     }
 
-    .stand-item-details p {
-      margin: 8px 0;
-      color: #666;
-      font-size: 14px;
+    .section-header p {
+      color: rgba(255,255,255,0.5); font-size: 1rem;
     }
 
-    .view-on-map-btn {
-      width: 100%;
-      padding: 10px;
-      margin-top: 12px;
-      border: none;
-      background: #4A90E2;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.2s;
+    .orga-grid {
+      max-width: 1000px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
     }
 
-    .view-on-map-btn:hover {
-      background: #357ABD;
+    .orga-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 28px 24px;
+      text-align: center;
+      transition: all 0.3s;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      header h1 {
-        font-size: 1rem;
-      }
-
-      nav button, nav a {
-        padding: 6px 12px;
-        font-size: 13px;
-      }
-
-      .map-controls {
-        bottom: 10px;
-        right: 10px;
-      }
-
-      .map-controls button {
-        width: 45px;
-        height: 45px;
-        font-size: 20px;
-      }
-
-      .export-btn {
-        top: 10px;
-        right: 10px;
-        padding: 10px 16px;
-        font-size: 13px;
-      }
-
-      #stand-tooltip {
-        max-width: 250px;
-        min-width: 200px;
-      }
+    .orga-card:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-4px);
     }
 
-    /* Loading indicator */
-    .loading {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 20px 40px;
-      border-radius: 12px;
-      font-size: 16px;
-      z-index: 1000;
-      display: none;
+    .orga-card .orga-emoji {
+      font-size: 40px; margin-bottom: 16px; display: block;
     }
 
-    .loading.active {
-      display: block;
+    .orga-card h4 {
+      font-size: 1rem; font-weight: 700; margin-bottom: 6px;
+    }
+
+    .orga-card p {
+      font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.5;
+    }
+
+    /* ========== MAP SECTION ========== */
+    .map-section {
+      padding: 60px 24px 80px;
+    }
+
+    .map-embed {
+      max-width: 1000px; margin: 0 auto;
+      border-radius: 20px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      aspect-ratio: 16/9;
+    }
+
+    .map-embed iframe {
+      width: 100%; height: 100%; border: none;
+      filter: grayscale(0.3) brightness(0.85);
+      transition: filter 0.3s;
+    }
+
+    .map-embed:hover iframe { filter: grayscale(0) brightness(1); }
+
+    .map-address {
+      text-align: center; margin-top: 20px;
+      color: rgba(255,255,255,0.5); font-size: 0.95rem;
+    }
+
+    .map-address strong { color: white; }
+
+    /* ========== FOOTER ========== */
+    .footer {
+      padding: 40px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      color: rgba(255,255,255,0.3);
+      font-size: 13px;
+    }
+
+    /* ========== FLOATING SHAPES ========== */
+    .float-shapes {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+
+    .float-shape {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.08;
+      animation: floatShape 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatShape {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, -40px) scale(1.1); }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>🎯 Forum Jobs - Plan Interactif</h1>
-  <nav>
-    <button class="active" onclick="switchView('plan')">📍 Plan</button>
-    <button onclick="switchView('list')">📋 Liste</button>
-  </nav>
-</header>
-
-<main>
-  <!-- Vue Plan -->
-  <div id="plan-view">
-    <button class="export-btn" onclick="exportToPDF()">
-      📄 Exporter en PDF
-    </button>
-    
-    <div id="plan-container">
-      <div id="plan-content"></div>
-    </div>
-    
-    <div class="map-controls">
-      <button onclick="toggleFullscreen()" title="Plein écran">⛶</button>
-      <button onclick="zoomIn()" title="Zoom avant">+</button>
-      <button onclick="zoomOut()" title="Zoom arrière">−</button>
-      <button onclick="centerPlan()" title="Recentrer">⊙</button>
-    </div>
-    
-    <div id="stand-tooltip">
-      <button class="close-btn" onclick="closeTooltip()">×</button>
-      <div id="tooltip-content"></div>
-    </div>
-  </div>
-
-  <!-- Vue Liste -->
-  <div id="list-view">
-    <div class="list-container">
-      <div class="search-bar">
-        <input type="text" id="search" placeholder="🔍 Rechercher un stand, secteur ou métier...">
-      </div>
-      
-      <div class="filters">
-        <div class="filter-group">
-          <button class="filter-btn active" data-filter="age" data-value="all">Tous âges</button>
-          <button class="filter-btn" data-filter="age" data-value="16+">16+</button>
-          <button class="filter-btn" data-filter="age" data-value="18+">18+</button>
-        </div>
-        <div class="filter-group" id="sector-filters">
-          <button class="filter-btn active" data-filter="sector" data-value="all">Tous secteurs</button>
-        </div>
-      </div>
-      
-      <div class="stands-list" id="stands-list"></div>
-    </div>
-  </div>
-</main>
-
-<div class="loading" id="loading">
-  Génération du PDF en cours...
+<!-- Floating background shapes -->
+<div class="float-shapes">
+  <div class="float-shape" style="width:600px;height:600px;background:var(--primary);top:-200px;right:-100px;animation-delay:0s"></div>
+  <div class="float-shape" style="width:500px;height:500px;background:var(--accent);bottom:-200px;left:-100px;animation-delay:5s"></div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Navigation -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <span class="logo-dot">F</span>
+      Forum Jobs
+    </a>
+    <button class="topnav-mobile-btn" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    <div class="topnav-links">
+      <a href="index.html" class="active">Accueil</a>
+      <a href="plan.html">Plan 2D</a>
+      <a href="liste.html">Liste</a>
+      <a href="vue3d.html">Vue 3D</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </div>
+</nav>
 
-<script>
-// ========== DONNÉES ==========
-const standsData = [
-  {
-    "id": "A01",
-    "name": "Structure Info Jeunes - Kiosk",
-    "zone": "zone-a",
-    "sector": "Informations",
-    "jobs": "",
-    "age": "11-25 ans",
-    "description": ""
-  },
-  {
-    "id": "A02",
-    "name": "Mission locale",
-    "zone": "zone-a",
-    "sector": "Informations",
-    "jobs": "",
-    "age": "16+",
-    "description": ""
-  },
-  {
-    "id": "A03",
-    "name": "Structure Info Jeunes - Kiosk",
-    "zone": "zone-a",
-    "sector": "Informations",
-    "jobs": "",
-    "age": "16+",
-    "description": ""
-  },
-  {
-    "id": "A04",
-    "name": "Mission locale",
-    "zone": "zone-a",
-    "sector": "Informations",
-    "jobs": "",
-    "age": "16+",
-    "description": ""
-  },
-  {
-    "id": "A05",
-    "name": "Structure Info Jeunes - Kiosk",
-    "zone": "zone-a",
-    "sector": "Informations",
-    "jobs": "",
-    "age": "11-25 ans",
-    "description": ""
-  },
-  {
-    "id": "A06",
-    "name": "Mission locale",
-    "zone": "zone-a",
-    "sector": "Informations",
-    "jobs": "",
-    "age": "16+",
-    "description": ""
-  },
-  {
-    "id": "B01",
-    "name": "Adequat",
-    "zone": "zone-b",
-    "sector": "Interim",
-    "jobs": "Usine, chantier",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "B02",
-    "name": "Adequat2",
-    "zone": "zone-b",
-    "sector": "Interim",
-    "jobs": "Usine, chantier",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "B03",
-    "name": "Adequat3",
-    "zone": "zone-b",
-    "sector": "Interim",
-    "jobs": "Usine, chantier",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "B04",
-    "name": "Adequat4",
-    "zone": "zone-b",
-    "sector": "Interim",
-    "jobs": "Usine, chantier",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "B05",
-    "name": "Adequat5",
-    "zone": "zone-b",
-    "sector": "Interim",
-    "jobs": "Usine, chantier",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "B06",
-    "name": "Adequat6",
-    "zone": "zone-b",
-    "sector": "Interim",
-    "jobs": "Usine, chantier",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "B07",
-    "name": "Adequat7",
-    "zone": "zone-b",
-    "sector": "Interim",
-    "jobs": "Usine, chantier",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C01",
-    "name": "Lecapitaine",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C02",
-    "name": "Lecapitaine2",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C03",
-    "name": "Lecapitaine3",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C04",
-    "name": "Lecapitaine4",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C05",
-    "name": "Lecapitaine5",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C06",
-    "name": "Lecapitaine6",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C07",
-    "name": "Lecapitaine7",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C08",
-    "name": "Lecapitaine8",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C09",
-    "name": "Lecapitaine9",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C10",
-    "name": "Lecapitaine10",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C11",
-    "name": "Lecapitaine11",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C12",
-    "name": "Lecapitaine12",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C13",
-    "name": "Lecapitaine13",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C14",
-    "name": "Lecapitaine14",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C15",
-    "name": "Lecapitaine15",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C16",
-    "name": "Lecapitaine16",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C17",
-    "name": "Lecapitaine17",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C18",
-    "name": "Lecapitaine18",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C19",
-    "name": "Lecapitaine19",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C20",
-    "name": "Lecapitaine20",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C21",
-    "name": "Lecapitaine21",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C22",
-    "name": "Lecapitaine22",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C23",
-    "name": "Lecapitaine23",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C24",
-    "name": "Lecapitaine24",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C25",
-    "name": "Lecapitaine25",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C26",
-    "name": "Lecapitaine26",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "C27",
-    "name": "Lecapitaine27",
-    "zone": "zone-c",
-    "sector": "Voiture",
-    "jobs": "Carrossier, peintre",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "D01",
-    "name": "Affichage offres d'emploi",
-    "zone": "zone-d",
-    "sector": "Offres",
-    "jobs": "Tout type",
-    "age": "18+",
-    "description": "Vous pouvez retrouver toutes les offres d'emploi de FranceTravail affichées dans le couloir !"
-  },
-  {
-    "id": "D02",
-    "name": "Salle de réunion 1",
-    "zone": "zone-d",
-    "sector": "",
-    "jobs": "",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "D03",
-    "name": "Salle de réunion 2",
-    "zone": "zone-d",
-    "sector": "",
-    "jobs": "",
-    "age": "18+",
-    "description": ""
-  },
-  {
-    "id": "E01",
-    "name": "Toilettes",
-    "zone": "zone-e",
-    "sector": "",
-    "jobs": "",
-    "age": "",
-    "description": ""
-  }
-];
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-split">
+    <div class="hero-content">
+      <div class="hero-date">
+        <span class="dot"></span>
+        Vendredi 6 mars 2026 &mdash; 17h-19h30
+      </div>
+      <h1>
+        Trouve ton<br>
+        <span class="gradient-text">Job d'été</span>
+      </h1>
+      <p class="hero-subtitle">
+        Le forum de l'emploi saisonnier revient au Pôle Agglo 21 à Saint-Lô. Rencontre des entreprises, des agences d'intérim et des partenaires.
+      </p>
+      <div class="hero-cta">
+        <a href="plan.html" class="btn-hero btn-hero-primary">
+          Voir le plan
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="liste.html" class="btn-hero btn-hero-outline">
+          Liste des stands
+        </a>
+      </div>
+    </div>
+    <div class="hero-info-grid">
+      <div class="hero-info-card">
+        <span class="hi-icon">&#128197;</span>
+        <div class="hi-value">6 mars</div>
+        <div class="hi-label">Vendredi, 17h - 19h30</div>
+      </div>
+      <div class="hero-info-card">
+        <span class="hi-icon">&#128205;</span>
+        <div class="hi-value">Pôle Agglo 21</div>
+        <div class="hi-label">58 rue Lycette Darsonval, Saint-Lô</div>
+      </div>
+      <div class="hero-info-card">
+        <span class="hi-icon">&#127970;</span>
+        <div class="hi-value" style="color:#4cc9f0">40+</div>
+        <div class="hi-label">Stands & exposants</div>
+      </div>
+      <div class="hero-info-card">
+        <span class="hi-icon">&#127919;</span>
+        <div class="hi-value">Gratuit</div>
+        <div class="hi-label">Entrée libre, viens avec ton CV !</div>
+      </div>
+      <div class="hero-info-card">
+        <span class="hi-icon">&#128188;</span>
+        <div class="hi-value">5 zones</div>
+        <div class="hi-label">Entreprises, intérim, accueil...</div>
+      </div>
+      <div class="hero-info-card">
+        <span class="hi-icon">&#129309;</span>
+        <div class="hi-value">Partenaires</div>
+        <div class="hi-label">Le Kiosk, Mission Locale, France Travail</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-// ========== VARIABLES GLOBALES ==========
-let svgElement;
-let planContent;
-let planContainer;
-let tooltip;
-let tooltipContent;
-let currentView = 'plan';
-let scale = 1;
-let translateX = 0;
-let translateY = 0;
-let isDragging = false;
-let startX, startY;
-let lastX = 0, lastY = 0;
-let selectedStandElement = null;
-let isInitializing = true;
-let expandedStands = new Set();
-let filters = { age: 'all', sector: 'all' };
+<!-- Thématiques -->
+<section class="orga-section">
+  <div class="section-header">
+    <span class="section-tag">Les zones du forum</span>
+    <h2>Qui tu vas rencontrer</h2>
+    <p>Le forum est organisé en zones thématiques pour te guider facilement.</p>
+  </div>
+  <div class="info-grid" style="max-width:1200px;margin:0 auto">
+    <div class="info-card">
+      <div class="zone-color-tag" style="background:rgba(237,28,36,0.1);color:#ed1c24"><span class="zt-dot" style="background:#ed1c24"></span>Zone C</div>
+      <h3 style="color:var(--zone-c)">Entreprises du secteur</h3>
+      <p>Les entreprises locales qui recrutent pour l'été : industrie, commerce, services. La plus grande zone du forum.</p>
+    </div>
+    <div class="info-card">
+      <div class="zone-color-tag" style="background:rgba(41,171,226,0.1);color:#29abe2"><span class="zt-dot" style="background:#29abe2"></span>Zone B</div>
+      <h3 style="color:var(--zone-b)">Agences d'intérim</h3>
+      <p>Adéquat et d'autres agences te proposent des missions en usine, chantier et plus. Inscris-toi sur place !</p>
+    </div>
+    <div class="info-card">
+      <div class="zone-color-tag" style="background:rgba(140,198,63,0.1);color:#8cc63f"><span class="zt-dot" style="background:#8cc63f"></span>Zone A</div>
+      <h3 style="color:var(--zone-a)">Accueil & Ressources</h3>
+      <p>Le Kiosk Info Jeunes et la Mission Locale t'accompagnent dans tes recherches.</p>
+    </div>
+    <div class="info-card">
+      <div class="zone-color-tag" style="background:rgba(247,147,30,0.1);color:#f7931e"><span class="zt-dot" style="background:#f7931e"></span>Zone D</div>
+      <h3 style="color:var(--zone-d)">Offres & Salles</h3>
+      <p>Affichage des offres France Travail, salles de réunion pour entretiens individuels.</p>
+    </div>
+  </div>
+</section>
 
-// ========== INITIALISATION ==========
-async function init() {
-  planContent = document.getElementById('plan-content');
-  planContainer = document.getElementById('plan-container');
-  tooltip = document.getElementById('stand-tooltip');
-  tooltipContent = document.getElementById('tooltip-content');
+<!-- Organisateurs -->
+<section class="orga-section">
+  <div class="section-header">
+    <span class="section-tag">Co-organisé par</span>
+    <h2>Les partenaires du forum</h2>
+    <p>Ce forum est rendu possible grâce à la collaboration de ces acteurs locaux.</p>
+  </div>
+  <div class="orga-grid">
+    <div class="orga-card">
+      <span class="orga-emoji">&#128161;</span>
+      <h4>Le Kiosk Info Jeunes</h4>
+      <p>Information et orientation pour les 11-25 ans</p>
+    </div>
+    <div class="orga-card">
+      <span class="orga-emoji">&#129309;</span>
+      <h4>Mission Locale</h4>
+      <p>Accompagnement vers l'emploi pour les 16-25 ans</p>
+    </div>
+    <div class="orga-card">
+      <span class="orga-emoji">&#128188;</span>
+      <h4>France Travail</h4>
+      <p>Offres d'emploi et accompagnement professionnel</p>
+    </div>
+    <div class="orga-card">
+      <span class="orga-emoji">&#127752;</span>
+      <h4>Tandem</h4>
+      <p>Acteur de l'insertion et de l'accompagnement local</p>
+    </div>
+  </div>
+</section>
 
-  await loadSVG();
-  setupEventListeners();
-  centerPlan();
-  renderList();
-  
-  setTimeout(() => {
-    isInitializing = false;
-  }, 500);
-}
+<!-- Carte -->
+<section class="map-section">
+  <div class="section-header">
+    <span class="section-tag">Comment venir</span>
+    <h2>Pôle Agglo 21</h2>
+  </div>
+  <div class="map-embed">
+    <iframe
+      src="https://www.openstreetmap.org/export/embed.html?bbox=-1.100,49.110,-1.080,49.120&layer=mapnik&marker=49.1155,-1.0900"
+      loading="lazy"
+      referrerpolicy="no-referrer"
+    ></iframe>
+  </div>
+  <p class="map-address">
+    <strong>Pôle Agglo 21</strong> &mdash; 58 rue Lycette Darsonval, Saint-Lô
+  </p>
+</section>
 
-async function loadSVG() {
-  try {
-    const response = await fetch('plan.svg');
-    const svgText = await response.text();
-    planContent.innerHTML = svgText;
-    svgElement = planContent.querySelector('svg');
-    
-    if (!svgElement) {
-      console.error('SVG non trouvé');
-      return;
-    }
-
-    // Ajouter les labels pour chaque stand
-    addStandLabels();
-    
-    // Rendre les stands cliquables
-    const stands = svgElement.querySelectorAll('[id^="STAND_"]');
-    stands.forEach(stand => {
-      stand.style.cursor = 'pointer';
-      stand.addEventListener('click', (e) => {
-        e.stopPropagation();
-        handleStandClick(stand.id);
-      });
-    });
-    
-    console.log('SVG chargé avec succès');
-  } catch (error) {
-    console.error('Erreur lors du chargement du SVG:', error);
-    planContent.innerHTML = '<p style="color: white; text-align: center; padding: 40px;">Erreur de chargement du plan</p>';
-  }
-}
-
-// ========== AJOUT DES LABELS AMÉLIORÉS ==========
-function addStandLabels() {
-  standsData.forEach(stand => {
-    const standElement = svgElement.querySelector(`#STAND_${stand.id}`);
-    if (!standElement) return;
-    
-    const bbox = standElement.getBBox();
-    const centerX = bbox.x + bbox.width / 2;
-    const centerY = bbox.y + bbox.height / 2;
-    
-    // Déterminer l'orientation du stand
-    const isVertical = bbox.height > bbox.width;
-    
-    // Créer le groupe pour le label
-    const labelGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    labelGroup.classList.add('stand-label-group');
-    
-    // Créer le texte temporaire pour mesurer
-    const tempText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    tempText.textContent = stand.name;
-    tempText.setAttribute('font-size', '11');
-    tempText.setAttribute('font-weight', '600');
-    svgElement.appendChild(tempText);
-    const textBBox = tempText.getBBox();
-    svgElement.removeChild(tempText);
-    
-    // Dimensions du background avec padding
-    const padding = 6;
-    const bgWidth = textBBox.width + padding * 2;
-    const bgHeight = textBBox.height + padding * 2;
-    
-    // Créer le background
-    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    bg.classList.add('stand-label-bg');
-    
-    // Créer le texte
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.classList.add('stand-label');
-    text.textContent = stand.name;
-    text.setAttribute('font-size', '11');
-    text.setAttribute('font-weight', '600');
-    
-    if (isVertical) {
-      // Pour les stands verticaux, on met le texte verticalement
-      bg.setAttribute('x', centerX - bgHeight / 2);
-      bg.setAttribute('y', centerY - bgWidth / 2);
-      bg.setAttribute('width', bgHeight);
-      bg.setAttribute('height', bgWidth);
-      bg.setAttribute('transform', `rotate(90, ${centerX}, ${centerY})`);
-      
-      text.setAttribute('x', centerX);
-      text.setAttribute('y', centerY + 4);
-      text.setAttribute('transform', `rotate(90, ${centerX}, ${centerY})`);
-    } else {
-      // Pour les stands horizontaux, texte horizontal
-      bg.setAttribute('x', centerX - bgWidth / 2);
-      bg.setAttribute('y', centerY - bgHeight / 2);
-      bg.setAttribute('width', bgWidth);
-      bg.setAttribute('height', bgHeight);
-      
-      text.setAttribute('x', centerX);
-      text.setAttribute('y', centerY + 4);
-    }
-    
-    labelGroup.appendChild(bg);
-    labelGroup.appendChild(text);
-    svgElement.appendChild(labelGroup);
-  });
-}
-
-// ========== GESTION DES VUES ==========
-function switchView(view) {
-  currentView = view;
-  
-  // Cacher l'itinéraire quand on change de vue
-  hideRoute();
-  closeTooltip();
-  
-  // Mettre à jour les boutons
-  document.querySelectorAll('nav button').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  event.target.classList.add('active');
-  
-  // Afficher la bonne vue
-  if (view === 'plan') {
-    document.getElementById('plan-view').style.display = 'block';
-    document.getElementById('list-view').classList.remove('active');
-  } else {
-    document.getElementById('plan-view').style.display = 'none';
-    document.getElementById('list-view').classList.add('active');
-  }
-}
-
-// ========== ZOOM ET PAN ==========
-function setupEventListeners() {
-  // Double-clic pour dézoom
-  planContainer.addEventListener('dblclick', (e) => {
-    e.preventDefault();
-    const rect = planContainer.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    
-    // Si on est zoomé, dézoom vers le point cliqué
-    if (scale > 1) {
-      zoomAt(mouseX, mouseY, 0.5);
-    } else {
-      // Sinon, zoom avant
-      zoomAt(mouseX, mouseY, 1.5);
-    }
-  });
-
-  // Zoom molette
-  planContainer.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    const rect = planContainer.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    zoomAt(mouseX, mouseY, delta);
-  }, { passive: false });
-
-  // Pan souris
-  planContainer.addEventListener('mousedown', startDrag);
-  planContainer.addEventListener('mousemove', drag);
-  planContainer.addEventListener('mouseup', endDrag);
-  planContainer.addEventListener('mouseleave', endDrag);
-
-  // Pan tactile amélioré
-  let lastTouchDistance = 0;
-  let lastTouchX = 0;
-  let lastTouchY = 0;
-  let isTouchMoving = false;
-  
-  planContainer.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      // Un doigt = pan
-      const touch = e.touches[0];
-      lastTouchX = touch.clientX;
-      lastTouchY = touch.clientY;
-      isTouchMoving = true;
-      isDragging = true;
-      startX = touch.clientX - lastX;
-      startY = touch.clientY - lastY;
-    } else if (e.touches.length === 2) {
-      // Deux doigts = zoom pinch
-      e.preventDefault();
-      isTouchMoving = false;
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      lastTouchDistance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-      lastTouchX = (touch1.clientX + touch2.clientX) / 2;
-      lastTouchY = (touch1.clientY + touch2.clientY) / 2;
-    }
-  }, { passive: false });
-
-  planContainer.addEventListener('touchmove', (e) => {
-    if (e.touches.length === 1 && isTouchMoving) {
-      // Pan avec un doigt
-      e.preventDefault();
-      const touch = e.touches[0];
-      lastX = touch.clientX - startX;
-      lastY = touch.clientY - startY;
-      updateTransform();
-    } else if (e.touches.length === 2) {
-      // Zoom pinch avec deux doigts
-      e.preventDefault();
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const distance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-      
-      const currentTouchX = (touch1.clientX + touch2.clientX) / 2;
-      const currentTouchY = (touch1.clientY + touch2.clientY) / 2;
-      
-      if (lastTouchDistance > 0) {
-        const delta = distance / lastTouchDistance;
-        const rect = planContainer.getBoundingClientRect();
-        zoomAt(currentTouchX - rect.left, currentTouchY - rect.top, delta);
-      }
-      
-      lastTouchDistance = distance;
-      lastTouchX = currentTouchX;
-      lastTouchY = currentTouchY;
-    }
-  }, { passive: false });
-
-  planContainer.addEventListener('touchend', (e) => {
-    if (e.touches.length < 2) {
-      lastTouchDistance = 0;
-    }
-    if (e.touches.length === 0) {
-      isTouchMoving = false;
-      isDragging = false;
-      planContainer.classList.remove('grabbing');
-    }
-  });
-}
-
-function startDrag(e) {
-  isDragging = true;
-  planContainer.classList.add('grabbing');
-  startX = e.clientX - lastX;
-  startY = e.clientY - lastY;
-}
-
-function drag(e) {
-  if (!isDragging) return;
-  
-  e.preventDefault();
-  lastX = e.clientX - startX;
-  lastY = e.clientY - startY;
-  updateTransform();
-}
-
-function endDrag() {
-  isDragging = false;
-  planContainer.classList.remove('grabbing');
-}
-
-function zoomAt(mouseX, mouseY, delta) {
-  const oldScale = scale;
-  scale = Math.min(Math.max(0.5, scale * delta), 4);
-  
-  // Ajuster la translation pour zoomer vers le pointeur
-  translateX = mouseX - (mouseX - translateX) * (scale / oldScale);
-  translateY = mouseY - (mouseY - translateY) * (scale / oldScale);
-  
-  lastX = translateX;
-  lastY = translateY;
-  
-  updateTransform();
-}
-
-function zoomIn() {
-  const rect = planContainer.getBoundingClientRect();
-  zoomAt(rect.width / 2, rect.height / 2, 1.3);
-}
-
-function zoomOut() {
-  const rect = planContainer.getBoundingClientRect();
-  zoomAt(rect.width / 2, rect.height / 2, 0.7);
-}
-
-function updateTransform() {
-  planContent.style.transform = `translate(${lastX}px, ${lastY}px) scale(${scale})`;
-  updateTooltipPosition();
-}
-
-function centerPlan() {
-  const containerRect = planContainer.getBoundingClientRect();
-  const svgWidth = 1920;
-  const svgHeight = 1080;
-  
-  // Calculer l'échelle pour fitter dans le conteneur
-  const scaleX = containerRect.width / svgWidth;
-  const scaleY = containerRect.height / svgHeight;
-  scale = Math.min(scaleX, scaleY) * 0.9;
-  
-  // Centrer
-  translateX = (containerRect.width - svgWidth * scale) / 2;
-  translateY = (containerRect.height - svgHeight * scale) / 2;
-  
-  lastX = translateX;
-  lastY = translateY;
-  
-  planContent.classList.add('with-transition');
-  updateTransform();
-  
-  setTimeout(() => {
-    planContent.classList.remove('with-transition');
-  }, 300);
-}
-
-function zoomToStand(standElement) {
-  const bbox = standElement.getBBox();
-  const containerRect = planContainer.getBoundingClientRect();
-  
-  // Position du centre du stand dans le SVG
-  const standCenterX = bbox.x + bbox.width / 2;
-  const standCenterY = bbox.y + bbox.height / 2;
-  
-  // Zoom cible
-  scale = 2.5;
-  
-  // Calculer la translation pour centrer le stand
-  translateX = containerRect.width / 2 - standCenterX * scale;
-  translateY = containerRect.height / 2 - standCenterY * scale;
-  
-  lastX = translateX;
-  lastY = translateY;
-  
-  planContent.classList.add('with-transition');
-  updateTransform();
-  
-  setTimeout(() => {
-    planContent.classList.remove('with-transition');
-  }, 300);
-}
-
-// ========== GESTION DES STANDS ==========
-function handleStandClick(standId) {
-  console.log('Stand cliqué:', standId);
-  
-  // IMPORTANT: Fermer l'itinéraire précédent
-  hideRoute();
-  
-  // Désélectionner l'ancien stand
-  if (selectedStandElement) {
-    selectedStandElement.classList.remove('selected');
-  }
-  
-  // Sélectionner le nouveau stand
-  const standElement = svgElement.querySelector(`#${standId}`);
-  if (!standElement) return;
-  
-  selectedStandElement = standElement;
-  selectedStandElement.classList.add('selected');
-  
-  // Zoomer sur le stand
-  zoomToStand(standElement);
-  
-  // Afficher le tooltip après le zoom
-  setTimeout(() => {
-    showTooltip(standId, standElement);
-  }, 350);
-}
-
-function showTooltip(standId, standElement) {
-  // Extraire juste l'ID sans "STAND_"
-  const cleanId = standId.replace('STAND_', '');
-  const stand = standsData.find(s => s.id === cleanId);
-  
-  if (!stand) {
-    console.warn('Stand non trouvé dans le JSON:', cleanId);
-    tooltipContent.innerHTML = `
-      <h3>${cleanId}</h3>
-      <p><strong>📍 Stand:</strong> ${cleanId}</p>
-      <p>Information non disponible</p>
-    `;
-  } else {
-    tooltipContent.innerHTML = `
-      <h3>${stand.name}</h3>
-      <p><strong>📍 Stand:</strong> ${stand.id}</p>
-      ${stand.sector ? `<p><strong>🏢 Secteur:</strong> ${stand.sector}</p>` : ''}
-      ${stand.zone ? `<p><strong>🗺️ Zone:</strong> ${stand.zone.replace('zone-', 'Zone ').toUpperCase()}</p>` : ''}
-      ${stand.jobs ? `<p><strong>💼 Jobs:</strong> ${stand.jobs}</p>` : ''}
-      ${stand.age ? `<p><strong>👤 Âge:</strong> ${stand.age}</p>` : ''}
-      ${stand.description ? `<p><strong>ℹ️</strong> ${stand.description}</p>` : ''}
-      <button class="action-btn" onclick="showRoute('${standId}')">🧭 Voir l'itinéraire</button>
-    `;
-  }
-  
-  tooltip.classList.add('active');
-  updateTooltipPosition();
-}
-
-function showRoute(standId) {
-  console.log('Recherche de la route pour:', standId);
-  
-  // Chercher dans tout le document
-  const routeElement = document.querySelector(`#ROUTE_${standId}`);
-  const markerElement = document.querySelector(`#MARKER_${standId}`);
-  const endMarkerElement = document.querySelector(`#END_MARKER_${standId}`);
-  
-  console.log('Route trouvée:', routeElement);
-  
-  if (!routeElement) {
-    console.warn(`Route introuvable pour ${standId}`);
-    return;
-  }
-  
-  // D'ABORD cacher le tooltip et recentrer
-  tooltip.classList.remove('active');
-  centerPlan();
-  
-  // PUIS après un délai, cacher les anciennes routes et afficher la nouvelle
-  setTimeout(() => {
-    // Cacher toutes les routes
-    document.querySelectorAll('.route-line').forEach(route => route.classList.remove('active'));
-    document.querySelectorAll('.route-marker').forEach(marker => marker.classList.remove('active'));
-    
-    // Afficher la nouvelle route
-    routeElement.classList.add('active');
-    
-    if (markerElement) {
-      markerElement.classList.add('active');
-    }
-    
-    if (endMarkerElement) {
-      endMarkerElement.classList.add('active');
-    }
-    
-    console.log('Route activée');
-  }, 100);
-  
-  // Afficher un message avec bouton pour fermer - POSITION PLUS BASSE
-  setTimeout(() => {
-    tooltipContent.innerHTML = `
-      <h3>🧭 Itinéraire affiché</h3>
-      <p>Suivez la ligne bleue animée</p>
-      <button class="action-btn" onclick="hideRouteAndClose();">✕ Masquer l'itinéraire</button>
-    `;
-    
-    // Position fixe plus basse de l'écran au centre
-    tooltip.style.position = 'fixed';
-    tooltip.style.left = '50%';
-    tooltip.style.transform = 'translateX(-50%)';
-    tooltip.style.top = 'auto';
-    tooltip.style.bottom = '20px'; // Changé de 100px à 20px pour être plus bas
-    
-    tooltip.classList.add('active');
-  }, 450);
-}
-
-function hideRouteAndClose() {
-  hideRoute();
-  closeTooltip();
-}
-
-function hideRoute() {
-  console.log('Masquage des routes');
-  
-  // Chercher dans tout le document
-  const routes = document.querySelectorAll('.route-line');
-  const markers = document.querySelectorAll('.route-marker');
-  
-  routes.forEach(route => route.classList.remove('active'));
-  markers.forEach(marker => marker.classList.remove('active'));
-}
-
-function updateTooltipPosition() {
-  if (!tooltip.classList.contains('active') || !selectedStandElement) return;
-  
-  // Si le tooltip est en position fixe (pour l'itinéraire), ne pas le bouger
-  if (tooltip.style.position === 'fixed') return;
-  
-  const standRect = selectedStandElement.getBoundingClientRect();
-  const containerRect = planContainer.getBoundingClientRect();
-  const tooltipRect = tooltip.getBoundingClientRect();
-  
-  // Position au-dessus du stand
-  let left = standRect.left - containerRect.left + standRect.width / 2 - tooltipRect.width / 2;
-  let top = standRect.top - containerRect.top - tooltipRect.height - 15;
-  
-  // Ajustements si hors écran
-  if (left < 10) left = 10;
-  if (left + tooltipRect.width > containerRect.width - 10) {
-    left = containerRect.width - tooltipRect.width - 10;
-  }
-  
-  if (top < 10) {
-    // Si pas de place en haut, mettre en bas
-    top = standRect.bottom - containerRect.top + 15;
-  }
-  
-  tooltip.style.left = left + 'px';
-  tooltip.style.top = top + 'px';
-}
-
-function closeTooltip() {
-  tooltip.classList.remove('active');
-  
-  // Réinitialiser le style
-  tooltip.style.position = '';
-  tooltip.style.left = '';
-  tooltip.style.top = '';
-  tooltip.style.bottom = '';
-  tooltip.style.transform = '';
-  
-  if (selectedStandElement) {
-    selectedStandElement.classList.remove('selected');
-    selectedStandElement = null;
-  }
-}
-
-// ========== LISTE ==========
-function renderList() {
-  const list = document.getElementById('stands-list');
-  const search = document.getElementById('search');
-  
-  // Créer les filtres de secteur dynamiquement
-  const sectors = [...new Set(standsData.map(s => s.sector).filter(Boolean))];
-  const sectorFiltersContainer = document.getElementById('sector-filters');
-  sectorFiltersContainer.innerHTML = '<button class="filter-btn active" data-filter="sector" data-value="all">Tous secteurs</button>' + 
-    sectors.map(sector => 
-      `<button class="filter-btn" data-filter="sector" data-value="${sector}">${sector}</button>`
-    ).join('');
-  
-  // Event listeners pour les filtres
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const filterType = btn.dataset.filter;
-      const value = btn.dataset.value;
-      
-      // Update active state
-      document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      
-      // Update filter
-      filters[filterType] = value;
-      render();
-    });
-  });
-  
-  function render() {
-    const term = search.value.toLowerCase();
-    let filtered = standsData.filter(stand => {
-      // Recherche
-      const matchSearch = !term || 
-        stand.name.toLowerCase().includes(term) ||
-        stand.id.toLowerCase().includes(term) ||
-        stand.sector.toLowerCase().includes(term) ||
-        (stand.jobs && stand.jobs.toLowerCase().includes(term));
-      
-      // Filtre âge
-      const matchAge = filters.age === 'all' || 
-        (filters.age === '16+' && stand.age && (stand.age.includes('16+') || stand.age.includes('11-25'))) ||
-        (filters.age === '18+' && stand.age && stand.age.includes('18+'));
-      
-      // Filtre secteur
-      const matchSector = filters.sector === 'all' || stand.sector === filters.sector;
-      
-      return matchSearch && matchAge && matchSector;
-    });
-    
-    list.innerHTML = filtered.map(stand => {
-      const isExpanded = expandedStands.has(stand.id);
-      return `
-        <div class="stand-item">
-          <div class="stand-item-header" onclick="toggleStandDetails('${stand.id}')">
-            <div class="stand-item-info">
-              <h3>${stand.name}</h3>
-              <p><strong>${stand.id}</strong> • ${stand.sector}</p>
-              ${stand.age ? `<span class="badge">${stand.age}</span>` : ''}
-            </div>
-            <button class="expand-btn ${isExpanded ? 'expanded' : ''}">▼</button>
-          </div>
-          <div class="stand-item-details ${isExpanded ? 'expanded' : ''}" id="details-${stand.id}">
-            ${stand.zone ? `<p><strong>🗺️ Zone:</strong> ${stand.zone.replace('zone-', 'Zone ').toUpperCase()}</p>` : ''}
-            ${stand.jobs ? `<p><strong>💼 Emplois proposés:</strong> ${stand.jobs}</p>` : ''}
-            ${stand.sector ? `<p><strong>🏢 Type d'activité:</strong> ${stand.sector}</p>` : ''}
-            <button class="view-on-map-btn" onclick="viewStandOnMap('${stand.id}')">
-              📍 Voir sur la carte
-            </button>
-          </div>
-        </div>
-      `;
-    }).join('');
-    
-    if (filtered.length === 0) {
-      list.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">Aucun stand trouvé</p>';
-    }
-  }
-  
-  search.addEventListener('input', render);
-  render();
-}
-
-function toggleStandDetails(standId) {
-  const detailsEl = document.getElementById(`details-${standId}`);
-  const expandBtn = detailsEl.previousElementSibling.querySelector('.expand-btn');
-  
-  if (expandedStands.has(standId)) {
-    expandedStands.delete(standId);
-    detailsEl.classList.remove('expanded');
-    expandBtn.classList.remove('expanded');
-  } else {
-    expandedStands.add(standId);
-    detailsEl.classList.add('expanded');
-    expandBtn.classList.add('expanded');
-  }
-}
-
-function viewStandOnMap(standId) {
-  // Ajouter "STAND_" si pas déjà présent
-  const fullStandId = standId.startsWith('STAND_') ? standId : `STAND_${standId}`;
-  
-  // Passer en vue plan
-  switchView('plan');
-  
-  // Attendre que la vue soit affichée
-  setTimeout(() => {
-    const standElement = svgElement?.querySelector(`#${fullStandId}`);
-    if (!standElement) {
-      console.error('Stand introuvable:', fullStandId);
-      return;
-    }
-    
-    // Sélectionner le stand
-    handleStandClick(fullStandId);
-  }, 100);
-}
-
-// ========== FULLSCREEN ==========
-function toggleFullscreen() {
-  const elem = document.documentElement;
-  
-  if (!document.fullscreenElement && !document.webkitFullscreenElement && 
-      !document.mozFullScreenElement && !document.msFullscreenElement) {
-    // Entrer en plein écran
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) { // Safari
-      elem.webkitRequestFullscreen();
-    } else if (elem.mozRequestFullScreen) { // Firefox
-      elem.mozRequestFullScreen();
-    } else if (elem.msRequestFullscreen) { // IE/Edge
-      elem.msRequestFullscreen();
-    }
-  } else {
-    // Sortir du plein écran
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) { // Safari
-      document.webkitExitFullscreen();
-    } else if (document.mozCancelFullScreen) { // Firefox
-      document.mozCancelFullScreen();
-    } else if (document.msExitFullscreen) { // IE/Edge
-      document.msExitFullscreen();
-    }
-  }
-}
-
-// Mettre à jour l'icône du bouton fullscreen
-document.addEventListener('fullscreenchange', updateFullscreenButton);
-document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
-document.addEventListener('mozfullscreenchange', updateFullscreenButton);
-document.addEventListener('MSFullscreenChange', updateFullscreenButton);
-
-function updateFullscreenButton() {
-  const btn = document.querySelector('.map-controls button[onclick="toggleFullscreen()"]');
-  if (!btn) return;
-  
-  if (document.fullscreenElement || document.webkitFullscreenElement || 
-      document.mozFullScreenElement || document.msFullscreenElement) {
-    btn.textContent = '⛶';
-    btn.title = 'Quitter le plein écran';
-  } else {
-    btn.textContent = '⛶';
-    btn.title = 'Plein écran';
-  }
-}
-
-// ========== EXPORT PDF ==========
-async function exportToPDF() {
-  const loading = document.getElementById('loading');
-  loading.classList.add('active');
-  
-  try {
-    // Forcer l'affichage des labels pour l'export
-    planContent.classList.add('show-labels');
-    
-    // Masquer les éléments de l'interface
-    const controls = document.querySelector('.map-controls');
-    const exportBtn = document.querySelector('.export-btn');
-    const tooltipEl = document.getElementById('stand-tooltip');
-    
-    controls.style.display = 'none';
-    exportBtn.style.display = 'none';
-    tooltipEl.style.display = 'none';
-    
-    // Attendre un peu pour que le rendu soit complet
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    // Capturer le SVG avec html2canvas
-    const canvas = await html2canvas(planContent, {
-      scale: 2,
-      backgroundColor: '#ffffff',
-      logging: false,
-      useCORS: true
-    });
-    
-    // Créer le PDF
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4'
-    });
-    
-    const imgData = canvas.toDataURL('image/png');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    
-    // Sauvegarder le PDF
-    pdf.save('plan-forum-jobs.pdf');
-    
-    // Restaurer l'interface
-    controls.style.display = 'flex';
-    exportBtn.style.display = 'flex';
-    tooltipEl.style.display = 'block';
-    
-    // Retirer l'affichage forcé des labels
-    planContent.classList.remove('show-labels');
-    
-  } catch (error) {
-    console.error('Erreur lors de l\'export PDF:', error);
-    alert('Une erreur est survenue lors de l\'export PDF. Veuillez réessayer.');
-  } finally {
-    loading.classList.remove('active');
-  }
-}
-
-// ========== DÉMARRAGE ==========
-// Fonction pour fixer la hauteur réelle sur mobile
-function setRealViewportHeight() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
-
-window.addEventListener('load', () => {
-  setRealViewportHeight();
-  init();
-});
-
-window.addEventListener('resize', () => {
-  setRealViewportHeight();
-  if (currentView === 'plan' && !isInitializing) {
-    updateTooltipPosition();
-  }
-});
-</script>
+<!-- Footer -->
+<footer class="footer">
+  <p>Forum Jobs d'été 2026 &mdash; Organisé par Le Kiosk, Mission Locale, France Travail & Tandem</p>
+</footer>
 
 </body>
 </html>

@@ -3,40 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Gestion des Stands</title>
+  <title>Admin - Gestion des Stands | Forum Jobs d'ete 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/shared.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* ========== PAGE BASE ========== */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
+      background: var(--bg-light);
+      padding-top: 80px;
+      min-height: 100vh;
     }
 
-    .container {
-      max-width: 1400px;
+    .admin-container {
+      max-width: 1320px;
       margin: 0 auto;
+      padding: 0 24px 60px;
     }
 
-    header {
-      background: #1a1a1a;
-      color: white;
-      padding: 20px 30px;
-      border-radius: 12px;
-      margin-bottom: 20px;
+    /* ========== PAGE HEADER ========== */
+    .page-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       flex-wrap: wrap;
-      gap: 15px;
+      gap: 16px;
+      margin-bottom: 28px;
     }
 
-    header h1 {
-      font-size: 1.8rem;
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .page-header h1 span {
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: 1rem;
+      margin-left: 8px;
     }
 
     .header-actions {
@@ -45,972 +51,1079 @@
       flex-wrap: wrap;
     }
 
-    .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: #4A90E2;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #357ABD;
-      transform: translateY(-2px);
-    }
-
     .btn-success {
-      background: #7ED321;
+      background: #16a34a;
       color: white;
     }
-
     .btn-success:hover {
-      background: #6BC116;
-      transform: translateY(-2px);
+      background: #15803d;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
     .btn-danger {
-      background: #E74C3C;
+      background: #dc2626;
       color: white;
     }
-
     .btn-danger:hover {
-      background: #C0392B;
-      transform: translateY(-2px);
+      background: #b91c1c;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
     .btn-secondary {
-      background: #95a5a6;
-      color: white;
+      background: var(--surface);
+      color: var(--text);
+      border: 1.5px solid var(--border);
     }
-
     .btn-secondary:hover {
-      background: #7f8c8d;
+      background: var(--bg-light);
+      border-color: var(--text-muted);
     }
 
-    .stats {
+    .btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ========== TOAST ALERTS ========== */
+    .toast-container {
+      position: fixed;
+      top: 80px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      padding: 14px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      box-shadow: var(--shadow-lg);
+      transform: translateX(120%);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      max-width: 380px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .toast-success {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .toast-error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .toast-info {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid #c7d2fe;
+    }
+
+    /* ========== STATS ROW ========== */
+    .stats-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
     .stat-card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
     }
 
-    .stat-card h3 {
-      font-size: 14px;
-      color: #666;
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .stat-zone-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       margin-bottom: 8px;
     }
 
-    .stat-card .value {
-      font-size: 32px;
-      font-weight: bold;
-      color: #1a1a1a;
+    .stat-zone-tag .sz-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
     }
 
-    .search-filter {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+    .stat-card .stat-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-card .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-card.stat-total .stat-value { color: var(--primary); }
+    .stat-card.stat-a .stat-value { color: #5a8c1a; }
+    .stat-card.stat-b .stat-value { color: #1a7ca8; }
+    .stat-card.stat-c .stat-value { color: #c41818; }
+    .stat-card.stat-de .stat-value { color: #c77a0a; }
+
+    /* ========== SEARCH & FILTER BAR ========== */
+    .filter-bar {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
       display: flex;
-      gap: 15px;
+      gap: 14px;
       flex-wrap: wrap;
       align-items: center;
     }
 
-    .search-filter input,
-    .search-filter select {
-      padding: 10px 15px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
+    .filter-bar .search-wrapper {
       flex: 1;
-      min-width: 200px;
+      min-width: 240px;
+      position: relative;
     }
 
-    .search-filter input:focus,
-    .search-filter select:focus {
+    .filter-bar .search-wrapper svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .filter-bar input[type="text"] {
+      width: 100%;
+      padding: 10px 14px 10px 42px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg-light);
+      transition: all 0.2s;
+    }
+
+    .filter-bar input[type="text"]:focus {
       outline: none;
-      border-color: #4A90E2;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+      background: var(--surface);
     }
 
+    .filter-bar select {
+      padding: 10px 36px 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg-light);
+      cursor: pointer;
+      transition: all 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      min-width: 180px;
+    }
+
+    .filter-bar select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    .filter-bar .results-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* ========== STANDS GRID ========== */
     .stands-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 32px;
     }
 
+    .stands-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-muted);
+    }
+
+    .stands-empty svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .stands-empty p {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    /* ========== STAND CARD ========== */
     .stand-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
       overflow: hidden;
-      transition: all 0.2s;
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
     }
 
     .stand-card:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
     }
 
-    .stand-card-header {
-      background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .stand-card-header h3 {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .stand-card-body {
-      padding: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #666;
-      margin-bottom: 5px;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 8px 12px;
-      border: 2px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #4A90E2;
-    }
-
-    .stand-card-actions {
-      padding: 15px 20px;
-      background: #f8f9fa;
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 13px;
-    }
-
-    .modal {
+    .stand-card .card-accent {
       display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
+    }
+
+    .stand-card .card-zone-tag {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      max-width: 600px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-
-    .modal-header {
-      padding: 20px 30px;
-      border-bottom: 2px solid #f0f0f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 {
-      font-size: 1.5rem;
-    }
-
-    .modal-close {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: #f0f0f0;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 20px;
-      transition: all 0.2s;
-    }
-
-    .modal-close:hover {
-      background: #ddd;
-    }
-
-    .modal-body {
-      padding: 30px;
-    }
-
-    .modal-footer {
-      padding: 20px 30px;
-      border-top: 2px solid #f0f0f0;
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-
-    .badge {
-      display: inline-block;
+      gap: 5px;
       padding: 4px 10px;
-      border-radius: 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .stand-card .card-zone-tag .cz-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .stand-card .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px 0;
+    }
+
+    .stand-card .card-id {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      background: var(--bg-light);
+      padding: 4px 12px;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .stand-card .card-zone-badge {
       font-size: 12px;
       font-weight: 600;
-      background: #4A90E2;
-      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
     }
 
+    .stand-card .card-body {
+      padding: 14px 18px 6px;
+    }
+
+    .stand-card .card-field {
+      margin-bottom: 10px;
+    }
+
+    .stand-card .card-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .stand-card .card-field input,
+    .stand-card .card-field textarea {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1.5px solid transparent;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg-light);
+      transition: all 0.2s;
+      resize: none;
+    }
+
+    .stand-card .card-field textarea {
+      min-height: 44px;
+    }
+
+    .stand-card .card-field input:hover,
+    .stand-card .card-field textarea:hover {
+      border-color: var(--border);
+    }
+
+    .stand-card .card-field input:focus,
+    .stand-card .card-field textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.08);
+    }
+
+    .stand-card .card-footer {
+      display: flex;
+      gap: 8px;
+      padding: 12px 18px 16px;
+      border-top: 1px solid var(--border);
+      margin-top: 6px;
+    }
+
+    .stand-card .card-footer .btn {
+      flex: 1;
+      justify-content: center;
+      font-size: 13px;
+      padding: 8px 14px;
+    }
+
+    /* ========== EXPORT SECTION ========== */
     .export-section {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-top: 20px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-top: 8px;
     }
 
-    .export-section h2 {
-      margin-bottom: 15px;
+    .export-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      cursor: pointer;
+      transition: background 0.2s;
+      user-select: none;
+    }
+
+    .export-header:hover {
+      background: rgba(0, 0, 0, 0.015);
+    }
+
+    .export-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .export-header .chevron {
+      width: 20px;
+      height: 20px;
+      color: var(--text-muted);
+      transition: transform 0.3s;
+    }
+
+    .export-header.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .export-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .export-body.open {
+      max-height: 2000px;
+    }
+
+    .export-body-inner {
+      padding: 0 22px 22px;
+    }
+
+    .export-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
     }
 
     .json-output {
-      background: #1a1a1a;
-      color: #7ED321;
+      background: var(--bg-dark);
+      color: #a5f3b4;
       padding: 20px;
-      border-radius: 8px;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
+      border-radius: var(--radius-sm);
+      font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+      font-size: 12.5px;
       max-height: 400px;
       overflow-y: auto;
       white-space: pre;
-      margin-top: 15px;
+      line-height: 1.6;
+      tab-size: 2;
     }
 
-    .alert {
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    .json-output::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .json-output::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+
+    .json-output::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+
+    /* ========== MODAL ========== */
+    .modal-overlay {
       display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      transition: opacity 0.25s;
     }
 
-    .alert.active {
-      display: block;
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
     }
 
-    .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 2px solid #c3e6cb;
+    .modal-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      max-width: 560px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .alert-danger {
-      background: #f8d7da;
-      color: #721c24;
-      border: 2px solid #f5c6cb;
+    .modal-overlay.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-card::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .modal-card::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-top h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .modal-close-btn {
+      width: 34px;
+      height: 34px;
+      border: none;
+      background: var(--bg-light);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .modal-form {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-form .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .modal-form .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .modal-form .field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .modal-form .field label .required {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    .modal-form .field input,
+    .modal-form .field select,
+    .modal-form .field textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg-light);
+      transition: all 0.2s;
+    }
+
+    .modal-form .field textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .modal-form .field input:focus,
+    .modal-form .field select:focus,
+    .modal-form .field textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    .modal-form .field select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    /* Zone-colored option hints */
+    .modal-form .field select option[value="zone-a"] { color: #5a8c1a; }
+    .modal-form .field select option[value="zone-b"] { color: #1a7ca8; }
+    .modal-form .field select option[value="zone-c"] { color: #c41818; }
+    .modal-form .field select option[value="zone-d"] { color: #c77a0a; }
+    .modal-form .field select option[value="zone-e"] { color: #9e9500; }
+
+    .modal-bottom {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding: 18px 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ========== HIDDEN FILE INPUT ========== */
+    #file-input { display: none; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 1100px) {
+      .stands-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 768px) {
+      body { padding-top: 72px; }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-header h1 {
+        font-size: 1.4rem;
+      }
+
+      .page-header h1 span {
+        display: block;
+        margin-left: 0;
+        margin-top: 4px;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .header-actions .btn {
+        flex: 1;
+        justify-content: center;
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stats-row .stat-card:last-child {
+        grid-column: 1 / -1;
+      }
+
       .stands-grid {
         grid-template-columns: 1fr;
       }
 
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
+      .filter-bar .search-wrapper {
+        min-width: 100%;
+      }
+
+      .filter-bar select {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .modal-form .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .toast-container {
+        left: 24px;
+        right: 24px;
+      }
+
+      .toast {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions {
+        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <h1>🎯 Admin - Gestion des Stands</h1>
+<!-- Navigation -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <span class="logo-dot">F</span>
+      Forum Jobs
+    </a>
+    <button class="topnav-mobile-btn" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    <div class="topnav-links">
+      <a href="index.html">Accueil</a>
+      <a href="plan.html">Plan 2D</a>
+      <a href="liste.html">Liste</a>
+      <a href="vue3d.html">Vue 3D</a>
+      <a href="admin.html" class="active">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Toast Notifications -->
+<div class="toast-container" id="toast-container"></div>
+
+<div class="admin-container">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Gestion des Stands <span>Administration du forum</span></h1>
     <div class="header-actions">
-      <button class="btn btn-success" onclick="openAddModal()">➕ Nouveau Stand</button>
-      <button class="btn btn-primary" onclick="importJSON()">📥 Importer JSON</button>
-      <button class="btn btn-primary" onclick="exportJSON()">📤 Exporter JSON</button>
-      <a href="/ForumJobsEte/" class="btn btn-secondary">👁️ Voir le Plan</a>
-    </div>
-  </header>
-
-  <div id="alert" class="alert"></div>
-
-  <div class="stats">
-    <div class="stat-card">
-      <h3>Total Stands</h3>
-      <div class="value" id="stat-total">0</div>
-    </div>
-    <div class="stat-card">
-      <h3>Zone A</h3>
-      <div class="value" id="stat-zone-a">0</div>
-    </div>
-    <div class="stat-card">
-      <h3>Zone B</h3>
-      <div class="value" id="stat-zone-b">0</div>
-    </div>
-    <div class="stat-card">
-      <h3>Zone C</h3>
-      <div class="value" id="stat-zone-c">0</div>
+      <button class="btn btn-success btn-sm" onclick="openAddModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Nouveau Stand
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="importJSON()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Importer JSON
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="scrollToExport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Exporter JSON
+      </button>
+      <a href="plan.html" class="btn btn-outline btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+        Voir le Plan
+      </a>
     </div>
   </div>
 
-  <div class="search-filter">
-    <input type="text" id="search" placeholder="🔍 Rechercher un stand..." onkeyup="filterStands()">
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card stat-total">
+      <div class="stat-zone-tag" style="background:rgba(67,97,238,0.1);color:var(--primary)"><span class="sz-dot" style="background:var(--primary)"></span>Total</div>
+      <div class="stat-value" id="stat-total">0</div>
+      <div class="stat-label">Stands</div>
+    </div>
+    <div class="stat-card stat-a">
+      <div class="stat-zone-tag" style="background:rgba(140,198,63,0.1);color:#5a8c1a"><span class="sz-dot" style="background:var(--zone-a)"></span>Zone A</div>
+      <div class="stat-value" id="stat-zone-a">0</div>
+      <div class="stat-label">Accueil</div>
+    </div>
+    <div class="stat-card stat-b">
+      <div class="stat-zone-tag" style="background:rgba(41,171,226,0.1);color:#1a7ca8"><span class="sz-dot" style="background:var(--zone-b)"></span>Zone B</div>
+      <div class="stat-value" id="stat-zone-b">0</div>
+      <div class="stat-label">Interim</div>
+    </div>
+    <div class="stat-card stat-c">
+      <div class="stat-zone-tag" style="background:rgba(237,28,36,0.1);color:#c41818"><span class="sz-dot" style="background:var(--zone-c)"></span>Zone C</div>
+      <div class="stat-value" id="stat-zone-c">0</div>
+      <div class="stat-label">Entreprises</div>
+    </div>
+    <div class="stat-card stat-de">
+      <div class="stat-zone-tag" style="background:rgba(247,147,30,0.1);color:#c77a0a"><span class="sz-dot" style="background:var(--zone-d)"></span>Zone D/E</div>
+      <div class="stat-value" id="stat-zone-de">0</div>
+      <div class="stat-label">Autres</div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="filter-bar">
+    <div class="search-wrapper">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="search" placeholder="Rechercher par nom, ID ou secteur..." oninput="filterStands()">
+    </div>
     <select id="filter-zone" onchange="filterStands()">
       <option value="">Toutes les zones</option>
-      <option value="zone-a">Zone A</option>
-      <option value="zone-b">Zone B</option>
-      <option value="zone-c">Zone C</option>
-      <option value="zone-d">Zone D</option>
-      <option value="zone-e">Zone E</option>
+      <option value="zone-a">Zone A - Accueil</option>
+      <option value="zone-b">Zone B - Interim</option>
+      <option value="zone-c">Zone C - Entreprises</option>
+      <option value="zone-d">Zone D - Autres</option>
+      <option value="zone-e">Zone E - Services</option>
     </select>
     <select id="filter-sector" onchange="filterStands()">
       <option value="">Tous les secteurs</option>
     </select>
+    <div class="results-count" id="results-count"></div>
   </div>
 
+  <!-- Stands Grid -->
   <div class="stands-grid" id="stands-container"></div>
 
-  <div class="export-section">
-    <h2>📋 Export JSON</h2>
-    <p>Copiez ce JSON dans votre fichier <code>stands.json</code> ou dans <code>index</code></p>
-    <button class="btn btn-primary" onclick="copyJSON()">📋 Copier le JSON</button>
-    <button class="btn btn-success" onclick="downloadJSON()">💾 Télécharger le JSON</button>
-    <div class="json-output" id="json-output"></div>
+  <!-- Export Section (Collapsible) -->
+  <div class="export-section" id="export-section">
+    <div class="export-header" id="export-header" onclick="toggleExport()">
+      <h2>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        Export JSON
+      </h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="export-body" id="export-body">
+      <div class="export-body-inner">
+        <div class="export-actions">
+          <button class="btn btn-primary btn-sm" onclick="copyJSON()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copier
+          </button>
+          <button class="btn btn-success btn-sm" onclick="downloadJSON()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Telecharger
+          </button>
+        </div>
+        <div class="json-output" id="json-output"></div>
+      </div>
+    </div>
   </div>
+
 </div>
 
-<!-- Modal Add/Edit -->
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-top">
       <h2 id="modal-title">Nouveau Stand</h2>
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <button class="modal-close-btn" onclick="closeModal()">&times;</button>
     </div>
-    <div class="modal-body">
-      <form id="stand-form">
-        <input type="hidden" id="edit-index" value="">
-        
-        <div class="form-group">
-          <label>ID du Stand *</label>
+    <form class="modal-form" id="stand-form" onsubmit="return false;">
+      <input type="hidden" id="edit-index" value="">
+      <div class="form-row">
+        <div class="field">
+          <label>ID du Stand <span class="required">*</span></label>
           <input type="text" id="stand-id" required placeholder="Ex: A01, B02, C03...">
         </div>
-
-        <div class="form-group">
-          <label>Nom *</label>
-          <input type="text" id="stand-name" required placeholder="Ex: Mission locale">
-        </div>
-
-        <div class="form-group">
-          <label>Zone *</label>
+        <div class="field">
+          <label>Zone <span class="required">*</span></label>
           <select id="stand-zone" required>
-            <option value="">Sélectionnez une zone</option>
+            <option value="">Choisir une zone</option>
             <option value="zone-a">Zone A - Accueil et ressources</option>
-            <option value="zone-b">Zone B - Intérim</option>
+            <option value="zone-b">Zone B - Interim</option>
             <option value="zone-c">Zone C - Entreprises</option>
             <option value="zone-d">Zone D - Autres</option>
-            <option value="zone-e">Zone E - Toilettes</option>
+            <option value="zone-e">Zone E - Services</option>
           </select>
         </div>
-
-        <div class="form-group">
+      </div>
+      <div class="field">
+        <label>Nom <span class="required">*</span></label>
+        <input type="text" id="stand-name" required placeholder="Ex: Mission locale, Adequat...">
+      </div>
+      <div class="form-row">
+        <div class="field">
           <label>Secteur</label>
-          <input type="text" id="stand-sector" placeholder="Ex: Informations, Interim, Voiture...">
+          <input type="text" id="stand-sector" placeholder="Ex: Informations, Interim...">
         </div>
-
-        <div class="form-group">
-          <label>Emplois proposés</label>
-          <input type="text" id="stand-jobs" placeholder="Ex: Usine, chantier">
-        </div>
-
-        <div class="form-group">
-          <label>Âge</label>
+        <div class="field">
+          <label>Age</label>
           <input type="text" id="stand-age" placeholder="Ex: 18+, 16+, 11-25 ans">
         </div>
-
-        <div class="form-group">
-          <label>Description</label>
-          <textarea id="stand-description" placeholder="Description détaillée du stand..."></textarea>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-      <button class="btn btn-success" onclick="saveStand()">💾 Enregistrer</button>
+      </div>
+      <div class="field">
+        <label>Emplois proposes</label>
+        <input type="text" id="stand-jobs" placeholder="Ex: Usine, chantier, vente...">
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="stand-description" placeholder="Description detaillee du stand..."></textarea>
+      </div>
+    </form>
+    <div class="modal-bottom">
+      <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveStand()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+        Enregistrer
+      </button>
     </div>
   </div>
 </div>
 
-<!-- Import JSON Modal -->
-<input type="file" id="file-input" accept=".json" style="display: none;" onchange="handleFileUpload(event)">
+<!-- File Input for Import -->
+<input type="file" id="file-input" accept=".json" onchange="handleFileUpload(event)">
+
+<!-- Data Script -->
+<script src="js/data.js"></script>
 
 <script>
-// Données des stands
-let standsData = [];
+// ================================================================
+//  ADMIN PANEL - Forum Jobs d'ete
+// ================================================================
+
+let localStands = [];
 let filteredStands = [];
 
-// Charger les données au démarrage
-window.addEventListener('load', () => {
-  loadInitialData();
+// ---------- INIT ----------
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const loaded = await loadStandsData();
+    // Deep copy so we don't mutate the shared reference
+    localStands = JSON.parse(JSON.stringify(loaded));
+  } catch (e) {
+    console.warn('Erreur chargement data.js, fallback vide', e);
+    localStands = [];
+  }
+  filteredStands = [...localStands];
+  populateSectorFilter();
   renderStands();
   updateStats();
   updateExportJSON();
 });
 
-// Données initiales (copiées depuis votre JSON)
-function loadInitialData() {
-  standsData = [
-    {
-      "id": "A01",
-      "name": "Structure Info Jeunes - Kiosk",
-      "zone": "zone-a",
-      "sector": "Informations",
-      "jobs": "",
-      "age": "11-25 ans",
-      "description": ""
-    },
-    {
-      "id": "A02",
-      "name": "Mission locale",
-      "zone": "zone-a",
-      "sector": "Informations",
-      "jobs": "",
-      "age": "16+",
-      "description": ""
-    },
-    {
-      "id": "A03",
-      "name": "Structure Info Jeunes - Kiosk",
-      "zone": "zone-a",
-      "sector": "Informations",
-      "jobs": "",
-      "age": "16+",
-      "description": ""
-    },
-    {
-      "id": "A04",
-      "name": "Mission locale",
-      "zone": "zone-a",
-      "sector": "Informations",
-      "jobs": "",
-      "age": "16+",
-      "description": ""
-    },
-    {
-      "id": "A05",
-      "name": "Structure Info Jeunes - Kiosk",
-      "zone": "zone-a",
-      "sector": "Informations",
-      "jobs": "",
-      "age": "11-25 ans",
-      "description": ""
-    },
-    {
-      "id": "A06",
-      "name": "Mission locale",
-      "zone": "zone-a",
-      "sector": "Informations",
-      "jobs": "",
-      "age": "16+",
-      "description": ""
-    },
-    {
-      "id": "B01",
-      "name": "Adequat",
-      "zone": "zone-b",
-      "sector": "Interim",
-      "jobs": "Usine, chantier",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "B02",
-      "name": "Adequat2",
-      "zone": "zone-b",
-      "sector": "Interim",
-      "jobs": "Usine, chantier",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "B03",
-      "name": "Adequat3",
-      "zone": "zone-b",
-      "sector": "Interim",
-      "jobs": "Usine, chantier",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "B04",
-      "name": "Adequat4",
-      "zone": "zone-b",
-      "sector": "Interim",
-      "jobs": "Usine, chantier",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "B05",
-      "name": "Adequat5",
-      "zone": "zone-b",
-      "sector": "Interim",
-      "jobs": "Usine, chantier",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "B06",
-      "name": "Adequat6",
-      "zone": "zone-b",
-      "sector": "Interim",
-      "jobs": "Usine, chantier",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "B07",
-      "name": "Adequat7",
-      "zone": "zone-b",
-      "sector": "Interim",
-      "jobs": "Usine, chantier",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C01",
-      "name": "Lecapitaine",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C02",
-      "name": "Lecapitaine2",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C03",
-      "name": "Lecapitaine3",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C04",
-      "name": "Lecapitaine4",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C05",
-      "name": "Lecapitaine5",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C06",
-      "name": "Lecapitaine6",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C07",
-      "name": "Lecapitaine7",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C08",
-      "name": "Lecapitaine8",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C09",
-      "name": "Lecapitaine9",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C10",
-      "name": "Lecapitaine10",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C11",
-      "name": "Lecapitaine11",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C12",
-      "name": "Lecapitaine12",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C13",
-      "name": "Lecapitaine13",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C14",
-      "name": "Lecapitaine14",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C15",
-      "name": "Lecapitaine15",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C16",
-      "name": "Lecapitaine16",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C17",
-      "name": "Lecapitaine17",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C18",
-      "name": "Lecapitaine18",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C19",
-      "name": "Lecapitaine19",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C20",
-      "name": "Lecapitaine20",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C21",
-      "name": "Lecapitaine21",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C22",
-      "name": "Lecapitaine22",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C23",
-      "name": "Lecapitaine23",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C24",
-      "name": "Lecapitaine24",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C25",
-      "name": "Lecapitaine25",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C26",
-      "name": "Lecapitaine26",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "C27",
-      "name": "Lecapitaine27",
-      "zone": "zone-c",
-      "sector": "Voiture",
-      "jobs": "Carrossier, peintre",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "D01",
-      "name": "Affichage offres d'emploi",
-      "zone": "zone-d",
-      "sector": "Offres",
-      "jobs": "Tout type",
-      "age": "18+",
-      "description": "Vous pouvez retrouver toutes les offres d'emploi de FranceTravail affichées dans le couloir !"
-    },
-    {
-      "id": "D02",
-      "name": "Salle de réunion 1",
-      "zone": "zone-d",
-      "sector": "",
-      "jobs": "",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "D03",
-      "name": "Salle de réunion 2",
-      "zone": "zone-d",
-      "sector": "",
-      "jobs": "",
-      "age": "18+",
-      "description": ""
-    },
-    {
-      "id": "E01",
-      "name": "Toilettes",
-      "zone": "zone-e",
-      "sector": "",
-      "jobs": "",
-      "age": "",
-      "description": ""
-    }
-  ];
-  
-  filteredStands = [...standsData];
-  
-  // Remplir le filtre de secteur
-  const sectors = [...new Set(standsData.map(s => s.sector).filter(Boolean))];
-  const sectorFilter = document.getElementById('filter-sector');
-  sectors.forEach(sector => {
-    const option = document.createElement('option');
-    option.value = sector;
-    option.textContent = sector;
-    sectorFilter.appendChild(option);
+// ---------- ZONE HELPERS ----------
+const ZONE_COLORS = {
+  'zone-a': { color: '#8cc63f', bg: 'rgba(140,198,63,0.1)', textColor: '#5a8c1a', label: 'Zone A' },
+  'zone-b': { color: '#29abe2', bg: 'rgba(41,171,226,0.1)', textColor: '#1a7ca8', label: 'Zone B' },
+  'zone-c': { color: '#ed1c24', bg: 'rgba(237,28,36,0.1)', textColor: '#c41818', label: 'Zone C' },
+  'zone-d': { color: '#f7931e', bg: 'rgba(247,147,30,0.1)', textColor: '#c77a0a', label: 'Zone D' },
+  'zone-e': { color: '#fcee21', bg: 'rgba(252,238,33,0.1)', textColor: '#9e9500', label: 'Zone E' },
+};
+
+function zoneOf(id) {
+  return ZONE_COLORS[id] || { color: '#ccc', bg: 'rgba(200,200,200,0.1)', textColor: '#666', label: id };
+}
+
+// ---------- POPULATE SECTOR FILTER ----------
+function populateSectorFilter() {
+  const select = document.getElementById('filter-sector');
+  // Keep only the first "all" option
+  select.innerHTML = '<option value="">Tous les secteurs</option>';
+  const sectors = [...new Set(localStands.map(s => s.sector).filter(Boolean))].sort();
+  sectors.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    select.appendChild(opt);
   });
 }
 
-// Afficher les stands
+// ---------- RENDER STANDS ----------
 function renderStands() {
   const container = document.getElementById('stands-container');
   container.innerHTML = '';
-  
-  filteredStands.forEach((stand, index) => {
+
+  if (filteredStands.length === 0) {
+    container.innerHTML = `
+      <div class="stands-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 7h8M8 11h5"/></svg>
+        <p>Aucun stand ne correspond aux filtres.</p>
+      </div>`;
+    document.getElementById('results-count').textContent = '0 stand';
+    return;
+  }
+
+  document.getElementById('results-count').textContent =
+    filteredStands.length + ' stand' + (filteredStands.length > 1 ? 's' : '');
+
+  filteredStands.forEach((stand, idx) => {
+    const z = zoneOf(stand.zone);
     const card = document.createElement('div');
     card.className = 'stand-card';
     card.innerHTML = `
-      <div class="stand-card-header">
-        <h3>${stand.id}</h3>
-        <span class="badge">${getZoneLabel(stand.zone)}</span>
+      <div class="card-header">
+        <span class="card-id">${esc(stand.id)}</span>
+        <span class="card-zone-tag" style="background:${z.bg};color:${z.textColor}"><span class="cz-dot" style="background:${z.color}"></span>${z.label}</span>
       </div>
-      <div class="stand-card-body">
-        <div class="form-group">
+      <div class="card-body">
+        <div class="card-field">
           <label>Nom</label>
-          <input type="text" value="${stand.name}" onchange="updateStand(${index}, 'name', this.value)">
+          <input type="text" value="${escAttr(stand.name)}" data-idx="${idx}" data-field="name" onchange="onInlineEdit(this)">
         </div>
-        <div class="form-group">
+        <div class="card-field">
           <label>Secteur</label>
-          <input type="text" value="${stand.sector || ''}" onchange="updateStand(${index}, 'sector', this.value)">
+          <input type="text" value="${escAttr(stand.sector || '')}" data-idx="${idx}" data-field="sector" onchange="onInlineEdit(this)">
         </div>
-        <div class="form-group">
+        <div class="card-field">
           <label>Emplois</label>
-          <input type="text" value="${stand.jobs || ''}" onchange="updateStand(${index}, 'jobs', this.value)">
+          <input type="text" value="${escAttr(stand.jobs || '')}" data-idx="${idx}" data-field="jobs" onchange="onInlineEdit(this)">
         </div>
-        <div class="form-group">
-          <label>Âge</label>
-          <input type="text" value="${stand.age || ''}" onchange="updateStand(${index}, 'age', this.value)">
+        <div class="card-field">
+          <label>Age</label>
+          <input type="text" value="${escAttr(stand.age || '')}" data-idx="${idx}" data-field="age" onchange="onInlineEdit(this)">
         </div>
-        <div class="form-group">
+        <div class="card-field">
           <label>Description</label>
-          <textarea onchange="updateStand(${index}, 'description', this.value)">${stand.description || ''}</textarea>
+          <textarea data-idx="${idx}" data-field="description" onchange="onInlineEdit(this)">${esc(stand.description || '')}</textarea>
         </div>
       </div>
-      <div class="stand-card-actions">
-        <button class="btn btn-primary btn-sm" onclick="editStand(${index})">✏️ Éditer</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteStand(${index})">🗑️ Supprimer</button>
-      </div>
-    `;
+      <div class="card-footer">
+        <button class="btn btn-outline btn-sm" onclick="editStand(${idx})">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editer
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="deleteStand(${idx})">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          Supprimer
+        </button>
+      </div>`;
     container.appendChild(card);
   });
 }
 
-// Mettre à jour un champ de stand
-function updateStand(index, field, value) {
-  const originalIndex = standsData.findIndex(s => s.id === filteredStands[index].id);
-  standsData[originalIndex][field] = value;
-  filteredStands[index][field] = value;
+// ---------- INLINE EDITING ----------
+function onInlineEdit(el) {
+  const idx = parseInt(el.dataset.idx);
+  const field = el.dataset.field;
+  const value = el.tagName === 'TEXTAREA' ? el.value : el.value;
+  const stand = filteredStands[idx];
+  // Update local master copy
+  const masterIdx = localStands.findIndex(s => s.id === stand.id);
+  if (masterIdx !== -1) localStands[masterIdx][field] = value;
+  stand[field] = value;
   updateExportJSON();
-  showAlert('Stand mis à jour !', 'success');
+  showToast('Champ mis a jour', 'success');
 }
 
-// Filtrer les stands
+// ---------- FILTERING ----------
 function filterStands() {
-  const search = document.getElementById('search').value.toLowerCase();
-  const zoneFilter = document.getElementById('filter-zone').value;
-  const sectorFilter = document.getElementById('filter-sector').value;
-  
-  filteredStands = standsData.filter(stand => {
-    const matchSearch = !search || 
-      stand.name.toLowerCase().includes(search) ||
-      stand.id.toLowerCase().includes(search) ||
-      stand.sector.toLowerCase().includes(search);
-    
-    const matchZone = !zoneFilter || stand.zone === zoneFilter;
-    const matchSector = !sectorFilter || stand.sector === sectorFilter;
-    
-    return matchSearch && matchZone && matchSector;
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const zoneVal = document.getElementById('filter-zone').value;
+  const sectorVal = document.getElementById('filter-sector').value;
+
+  filteredStands = localStands.filter(s => {
+    const matchQ = !q ||
+      s.name.toLowerCase().includes(q) ||
+      s.id.toLowerCase().includes(q) ||
+      (s.sector && s.sector.toLowerCase().includes(q));
+    const matchZone = !zoneVal || s.zone === zoneVal;
+    const matchSector = !sectorVal || s.sector === sectorVal;
+    return matchQ && matchZone && matchSector;
   });
-  
+
   renderStands();
 }
 
-// Ouvrir modal d'ajout
+// ---------- ADD STAND ----------
 function openAddModal() {
   document.getElementById('modal-title').textContent = 'Nouveau Stand';
   document.getElementById('stand-form').reset();
   document.getElementById('edit-index').value = '';
-  document.getElementById('modal').classList.add('active');
+  openModal();
 }
 
-// Éditer un stand
-function editStand(index) {
-  const stand = filteredStands[index];
-  document.getElementById('modal-title').textContent = 'Éditer le Stand';
-  document.getElementById('edit-index').value = standsData.findIndex(s => s.id === stand.id);
+// ---------- EDIT STAND ----------
+function editStand(filteredIdx) {
+  const stand = filteredStands[filteredIdx];
+  const masterIdx = localStands.findIndex(s => s.id === stand.id);
+  document.getElementById('modal-title').textContent = 'Editer le Stand';
+  document.getElementById('edit-index').value = masterIdx;
   document.getElementById('stand-id').value = stand.id;
   document.getElementById('stand-name').value = stand.name;
   document.getElementById('stand-zone').value = stand.zone;
@@ -1018,156 +1131,228 @@ function editStand(index) {
   document.getElementById('stand-jobs').value = stand.jobs || '';
   document.getElementById('stand-age').value = stand.age || '';
   document.getElementById('stand-description').value = stand.description || '';
-  document.getElementById('modal').classList.add('active');
+  openModal();
 }
 
-// Fermer modal
-function closeModal() {
-  document.getElementById('modal').classList.remove('active');
-}
-
-// Sauvegarder le stand
+// ---------- SAVE STAND ----------
 function saveStand() {
   const editIndex = document.getElementById('edit-index').value;
   const stand = {
-    id: document.getElementById('stand-id').value,
-    name: document.getElementById('stand-name').value,
+    id: document.getElementById('stand-id').value.trim(),
+    name: document.getElementById('stand-name').value.trim(),
     zone: document.getElementById('stand-zone').value,
-    sector: document.getElementById('stand-sector').value,
-    jobs: document.getElementById('stand-jobs').value,
-    age: document.getElementById('stand-age').value,
-    description: document.getElementById('stand-description').value
+    sector: document.getElementById('stand-sector').value.trim(),
+    jobs: document.getElementById('stand-jobs').value.trim(),
+    age: document.getElementById('stand-age').value.trim(),
+    description: document.getElementById('stand-description').value.trim()
   };
-  
+
   if (!stand.id || !stand.name || !stand.zone) {
-    showAlert('Veuillez remplir tous les champs obligatoires !', 'danger');
+    showToast('Veuillez remplir les champs obligatoires (ID, Nom, Zone).', 'error');
     return;
   }
-  
-  if (editIndex !== '') {
-    // Modification
-    standsData[editIndex] = stand;
-    showAlert('Stand modifié avec succès !', 'success');
-  } else {
-    // Ajout
-    standsData.push(stand);
-    showAlert('Stand ajouté avec succès !', 'success');
-  }
-  
-  filteredStands = [...standsData];
-  closeModal();
-  renderStands();
-  updateStats();
-  updateExportJSON();
-}
 
-// Supprimer un stand
-function deleteStand(index) {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer ce stand ?')) return;
-  
-  const stand = filteredStands[index];
-  const originalIndex = standsData.findIndex(s => s.id === stand.id);
-  standsData.splice(originalIndex, 1);
+  if (editIndex !== '') {
+    // Edit existing
+    localStands[parseInt(editIndex)] = stand;
+    showToast('Stand modifie avec succes !', 'success');
+  } else {
+    // Check duplicate ID
+    if (localStands.some(s => s.id === stand.id)) {
+      showToast('Un stand avec cet ID existe deja.', 'error');
+      return;
+    }
+    localStands.push(stand);
+    showToast('Stand ajoute avec succes !', 'success');
+  }
+
+  closeModal();
+  populateSectorFilter();
   filterStands();
   updateStats();
   updateExportJSON();
-  showAlert('Stand supprimé !', 'success');
 }
 
-// Mettre à jour les statistiques
+// ---------- DELETE STAND ----------
+function deleteStand(filteredIdx) {
+  const stand = filteredStands[filteredIdx];
+  if (!confirm('Supprimer le stand ' + stand.id + ' (' + stand.name + ') ?')) return;
+  const masterIdx = localStands.findIndex(s => s.id === stand.id);
+  if (masterIdx !== -1) localStands.splice(masterIdx, 1);
+  populateSectorFilter();
+  filterStands();
+  updateStats();
+  updateExportJSON();
+  showToast('Stand ' + stand.id + ' supprime.', 'success');
+}
+
+// ---------- STATS ----------
 function updateStats() {
-  document.getElementById('stat-total').textContent = standsData.length;
-  document.getElementById('stat-zone-a').textContent = standsData.filter(s => s.zone === 'zone-a').length;
-  document.getElementById('stat-zone-b').textContent = standsData.filter(s => s.zone === 'zone-b').length;
-  document.getElementById('stat-zone-c').textContent = standsData.filter(s => s.zone === 'zone-c').length;
+  document.getElementById('stat-total').textContent = localStands.length;
+  document.getElementById('stat-zone-a').textContent = localStands.filter(s => s.zone === 'zone-a').length;
+  document.getElementById('stat-zone-b').textContent = localStands.filter(s => s.zone === 'zone-b').length;
+  document.getElementById('stat-zone-c').textContent = localStands.filter(s => s.zone === 'zone-c').length;
+  const de = localStands.filter(s => s.zone === 'zone-d' || s.zone === 'zone-e').length;
+  document.getElementById('stat-zone-de').textContent = de;
 }
 
-// Mettre à jour l'export JSON
+// ---------- EXPORT JSON ----------
 function updateExportJSON() {
-  document.getElementById('json-output').textContent = JSON.stringify(standsData, null, 2);
+  const output = document.getElementById('json-output');
+  output.textContent = JSON.stringify(localStands, null, 2);
 }
 
-// Copier le JSON
+function scrollToExport() {
+  const section = document.getElementById('export-section');
+  // Open the collapsible
+  const header = document.getElementById('export-header');
+  const body = document.getElementById('export-body');
+  if (!body.classList.contains('open')) {
+    body.classList.add('open');
+    header.classList.add('open');
+  }
+  updateExportJSON();
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function toggleExport() {
+  const header = document.getElementById('export-header');
+  const body = document.getElementById('export-body');
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+  if (body.classList.contains('open')) updateExportJSON();
+}
+
 function copyJSON() {
-  const json = JSON.stringify(standsData, null, 2);
+  const json = JSON.stringify(localStands, null, 2);
   navigator.clipboard.writeText(json).then(() => {
-    showAlert('JSON copié dans le presse-papier !', 'success');
+    showToast('JSON copie dans le presse-papier !', 'success');
+  }).catch(() => {
+    showToast('Impossible de copier.', 'error');
   });
 }
 
-// Télécharger le JSON
 function downloadJSON() {
-  const json = JSON.stringify(standsData, null, 2);
+  const json = JSON.stringify(localStands, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = 'stands.json';
+  document.body.appendChild(a);
   a.click();
-  showAlert('JSON téléchargé !', 'success');
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Fichier stands.json telecharge.', 'success');
 }
 
-// Importer JSON
+// ---------- IMPORT JSON ----------
 function importJSON() {
   document.getElementById('file-input').click();
 }
 
-// Gérer l'upload de fichier
 function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
-  
+
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
-      const data = JSON.parse(e.target.result);
-      standsData = data;
-      filteredStands = [...standsData];
-      renderStands();
+      const parsed = JSON.parse(e.target.result);
+      // Support both { stands: [...] } and plain [...]
+      const arr = Array.isArray(parsed) ? parsed : (parsed.stands || []);
+      if (!Array.isArray(arr) || arr.length === 0) {
+        showToast('Le fichier JSON ne contient aucun stand valide.', 'error');
+        return;
+      }
+      localStands = arr;
+      populateSectorFilter();
+      filterStands();
       updateStats();
       updateExportJSON();
-      showAlert('JSON importé avec succès !', 'success');
-    } catch (error) {
-      showAlert('Erreur lors de l\'import du JSON !', 'danger');
+      showToast(arr.length + ' stands importes avec succes !', 'success');
+    } catch (err) {
+      showToast('Erreur de parsing JSON : ' + err.message, 'error');
     }
   };
   reader.readAsText(file);
+  // Reset so same file can be re-imported
+  event.target.value = '';
 }
 
-// Exporter JSON
-function exportJSON() {
-  updateExportJSON();
-  document.querySelector('.export-section').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Afficher une alerte
-function showAlert(message, type) {
-  const alert = document.getElementById('alert');
-  alert.textContent = message;
-  alert.className = `alert alert-${type} active`;
+// ---------- MODAL ----------
+function openModal() {
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.add('active');
+  // Focus first input after animation
   setTimeout(() => {
-    alert.classList.remove('active');
+    const first = overlay.querySelector('input:not([type=hidden])');
+    if (first) first.focus();
+  }, 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'modal-overlay') closeModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ---------- TOAST NOTIFICATIONS ----------
+function showToast(message, type) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-' + (type || 'info');
+
+  // Icon
+  let icon = '';
+  if (type === 'success') {
+    icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  } else if (type === 'error') {
+    icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>';
+  } else {
+    icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+  }
+
+  toast.innerHTML = icon + '<span>' + esc(message) + '</span>';
+  container.appendChild(toast);
+
+  // Trigger animation
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+  });
+
+  // Auto-dismiss after 3s
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 400);
   }, 3000);
 }
 
-// Obtenir le label de zone
-function getZoneLabel(zone) {
-  const labels = {
-    'zone-a': 'Zone A',
-    'zone-b': 'Zone B',
-    'zone-c': 'Zone C',
-    'zone-d': 'Zone D',
-    'zone-e': 'Zone E'
-  };
-  return labels[zone] || zone;
+// ---------- ESCAPE HELPERS ----------
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
-// Fermer modal en cliquant à l'extérieur
-document.getElementById('modal').addEventListener('click', (e) => {
-  if (e.target.id === 'modal') {
-    closeModal();
-  }
-});
+function escAttr(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 </script>
 
 </body>

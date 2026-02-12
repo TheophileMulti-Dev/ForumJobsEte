@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vue 3D - Forum Jobs d'été 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/shared.css">
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      height: 100vh; overflow: hidden;
+      background: #1a1a2e;
+    }
+    #canvas3d {
+      position: fixed;
+      top: 64px; left: 0; right: 0; bottom: 0;
+      width: 100%; height: calc(100vh - 64px);
+      display: block;
+      touch-action: none;
+    }
+
+    /* ========== ZONE NAV PANEL (Maps style) ========== */
+    .zone-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(15,14,23,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 0;
+    }
+
+    .zone-nav-scroll {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 12px 12px 14px;
+      gap: 8px;
+    }
+
+    .zone-nav-scroll::-webkit-scrollbar { display: none; }
+
+    .zone-nav-btn {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.8);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      white-space: nowrap;
+    }
+
+    .zone-nav-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .zone-nav-btn.active {
+      background: rgba(67,97,238,0.2);
+      border-color: rgba(67,97,238,0.5);
+      color: white;
+    }
+
+    .zone-nav-btn .zn-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .zone-nav-btn .zn-count {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.1);
+      padding: 2px 7px;
+      border-radius: 10px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ========== INFO PANEL (when zone selected) ========== */
+    .zone-info-panel {
+      position: fixed;
+      top: 80px; left: 16px;
+      z-index: 100;
+      background: rgba(15,14,23,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 16px 18px;
+      max-width: 280px;
+      transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+    }
+
+    .zone-info-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .zone-info-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .zone-info-title .zi-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .zone-info-title span {
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .zone-info-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .zone-info-stands {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      font-weight: 600;
+    }
+
+    .zone-info-stands strong {
+      color: white;
+    }
+
+    /* ========== STAND TOOLTIP ========== */
+    .stand-tooltip {
+      display: none;
+      position: fixed;
+      background: rgba(15,14,23,0.96);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 18px;
+      z-index: 200;
+      min-width: 240px;
+      max-width: 320px;
+      color: white;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    }
+    .stand-tooltip.visible { display: block; }
+
+    .tooltip-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .tooltip-id-badge {
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      color: white;
+    }
+
+    .tooltip-close {
+      background: rgba(255,255,255,0.1);
+      border: none; border-radius: 8px;
+      width: 28px; height: 28px;
+      color: white; font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .tooltip-close:hover { background: rgba(255,255,255,0.2); }
+
+    .tooltip-name {
+      font-size: 16px; font-weight: 700;
+      margin-bottom: 8px;
+      color: rgba(255,255,255,0.95);
+    }
+
+    .tooltip-zone-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .tooltip-zone-tag .tz-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .tooltip-details {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+    .tooltip-details strong {
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ========== LEGEND (top-right, compact) ========== */
+    .legend-compact {
+      position: fixed;
+      top: 80px;
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      max-width: 300px;
+    }
+
+    .legend-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      background: rgba(15,14,23,0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .legend-chip .lc-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ========== LOADING ========== */
+    .loading-screen {
+      position: fixed; inset: 0;
+      background: #0f0e17;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s;
+    }
+    .loading-screen.fade-out { opacity: 0; pointer-events: none; }
+    .loading-spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      margin-top: 16px;
+      color: rgba(255,255,255,0.6);
+      font-family: var(--font);
+      font-size: 14px;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .zone-info-panel {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+      }
+
+      .legend-compact {
+        top: 76px;
+        right: 10px;
+      }
+
+      .zone-nav-btn {
+        padding: 9px 14px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Chargement de la vue 3D...</div>
+</div>
+
+<!-- Navigation -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <span class="logo-dot">F</span>
+      Forum Jobs
+    </a>
+    <button class="topnav-mobile-btn" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    <div class="topnav-links">
+      <a href="index.html">Accueil</a>
+      <a href="plan.html">Plan 2D</a>
+      <a href="liste.html">Liste</a>
+      <a href="vue3d.html" class="active">Vue 3D</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 3D Canvas -->
+<canvas id="canvas3d"></canvas>
+
+<!-- Compact Legend (top-right) -->
+<div class="legend-compact" id="legendCompact"></div>
+
+<!-- Zone Info Panel (top-left, shows on zone click) -->
+<div class="zone-info-panel" id="zoneInfoPanel">
+  <div class="zone-info-title">
+    <span class="zi-dot" id="ziDot"></span>
+    <span id="ziTitle"></span>
+  </div>
+  <div class="zone-info-desc" id="ziDesc"></div>
+  <div class="zone-info-stands" id="ziStands"></div>
+</div>
+
+<!-- Zone Navigation (bottom bar, Maps style) -->
+<div class="zone-nav">
+  <div class="zone-nav-scroll" id="zoneNavScroll"></div>
+</div>
+
+<!-- Tooltip -->
+<div class="stand-tooltip" id="standTooltip">
+  <div class="tooltip-top">
+    <span class="tooltip-id-badge" id="ttBadge"></span>
+    <button class="tooltip-close" onclick="closeTooltip()">&times;</button>
+  </div>
+  <div class="tooltip-name" id="ttName"></div>
+  <div class="tooltip-zone-tag" id="ttZoneTag">
+    <span class="tz-dot" id="ttZoneDot"></span>
+    <span id="ttZoneLabel"></span>
+  </div>
+  <div class="tooltip-details" id="ttDetails"></div>
+</div>
+
+<!-- Scripts -->
+<script src="js/data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ================================================================
+//  CONFIGURATION & CONSTANTS
+// ================================================================
+
+const S = 10;
+const OX = 960, OZ = 540;
+
+function svgTo3D(svgX, svgY) {
+  return {
+    x: (svgX - OX) / S,
+    z: -(svgY - OZ) / S
+  };
+}
+
+const ZONE_COLORS_HEX = {
+  'zone-a': 0x8cc63f,
+  'zone-b': 0x29abe2,
+  'zone-c': 0xed1c24,
+  'zone-d': 0xf7931e,
+  'zone-e': 0xfcee21
+};
+
+const ZONE_CSS = {
+  'zone-a': '#8cc63f',
+  'zone-b': '#29abe2',
+  'zone-c': '#ed1c24',
+  'zone-d': '#f7931e',
+  'zone-e': '#fcee21'
+};
+
+const ZONE_INFO = {
+  'zone-a': { label: 'Zone A - Accueil', desc: 'Le Kiosk Info Jeunes et Mission Locale t\'accompagnent.' },
+  'zone-b': { label: 'Zone B - Interim', desc: 'Agences d\'interim : missions en usine, chantier et plus.' },
+  'zone-c': { label: 'Zone C - Entreprises', desc: 'Entreprises locales qui recrutent pour l\'ete.' },
+  'zone-d': { label: 'Zone D - Offres & Salles', desc: 'Affichage offres France Travail et salles de reunion.' },
+  'zone-e': { label: 'Zone E - Services', desc: 'Services et toilettes.' }
+};
+
+// Building polygon (SVG coords)
+const BUILDING_SVG = [
+  [1560,150],[1560,360],[1380,360],[1380,300],[1140,300],[1140,360],
+  [1020,360],[1020,300],[900,300],[900,360],[660,360],[660,300],
+  [480,300],[480,690],[300,690],[300,450],[60,450],[60,900],
+  [300,900],[660,900],[660,690],[660,450],[1140,450],[1140,900],
+  [1380,900],[1380,450],[1560,450],[1560,570],[1860,570],[1860,150]
+];
+
+// Zone floor shapes (SVG coords)
+const ZONE_SHAPES_SVG = {
+  'zone-a': [[1140,300],[1380,300],[1380,900],[1140,900]],
+  'zone-b': [[1560,270],[1860,270],[1860,570],[1560,570]],
+  'zone-c': [[480,300],[660,300],[660,450],[660,690],[660,900],[480,900],[300,900],[60,900],[60,450],[300,450],[300,690],[480,690]],
+  'zone-d-1': [[750,360],[1050,360],[1050,450],[750,450]],
+  'zone-d-2': [[1560,150],[1860,150],[1860,270],[1560,270]],
+  'zone-e': [[900,300],[1020,300],[1020,360],[900,360]]
+};
+
+// Stand rects (SVG coords)
+const STAND_RECTS_SVG = {
+  A01: { x: 1320, y: 690, w: 60, h: 180 },
+  A02: { x: 1320, y: 600, w: 60, h: 90 },
+  A03: { x: 1320, y: 450, w: 60, h: 150 },
+  A04: { x: 1140, y: 420, w: 60, h: 90 },
+  A05: { x: 1140, y: 510, w: 60, h: 90 },
+  A06: { x: 1140, y: 600, w: 60, h: 90 },
+  B01: { x: 1560, y: 510, w: 90, h: 60 },
+  B02: { x: 1650, y: 510, w: 120, h: 60 },
+  B03: { x: 1770, y: 510, w: 90, h: 60 },
+  B04: { x: 1770, y: 390, w: 90, h: 60 },
+  B05: { x: 1680, y: 390, w: 90, h: 60 },
+  B06: { x: 1680, y: 330, w: 90, h: 60 },
+  B07: { x: 1770, y: 330, w: 90, h: 60 },
+  C01: { x: 60, y: 780, w: 60, h: 90 },
+  C02: { x: 60, y: 690, w: 60, h: 90 },
+  C03: { x: 60, y: 600, w: 60, h: 90 },
+  C04: { x: 60, y: 510, w: 60, h: 90 },
+  C05: { x: 60, y: 450, w: 60, h: 60 },
+  C06: { x: 120, y: 840, w: 90, h: 60 },
+  C07: { x: 210, y: 840, w: 90, h: 60 },
+  C08: { x: 150, y: 450, w: 90, h: 60 },
+  C09: { x: 240, y: 600, w: 60, h: 90 },
+  C10: { x: 240, y: 510, w: 60, h: 90 },
+  C11: { x: 240, y: 450, w: 60, h: 60 },
+  C12: { x: 300, y: 840, w: 60, h: 60 },
+  C13: { x: 360, y: 840, w: 60, h: 60 },
+  C14: { x: 420, y: 840, w: 60, h: 60 },
+  C15: { x: 300, y: 690, w: 60, h: 60 },
+  C16: { x: 360, y: 690, w: 60, h: 60 },
+  C17: { x: 420, y: 690, w: 60, h: 60 },
+  C18: { x: 480, y: 840, w: 90, h: 60 },
+  C19: { x: 570, y: 840, w: 90, h: 60 },
+  C20: { x: 480, y: 690, w: 60, h: 60 },
+  C21: { x: 480, y: 570, w: 60, h: 90 },
+  C22: { x: 480, y: 480, w: 60, h: 90 },
+  C23: { x: 480, y: 420, w: 60, h: 60 },
+  C24: { x: 480, y: 300, w: 180, h: 60 },
+  C25: { x: 600, y: 450, w: 60, h: 120 },
+  C26: { x: 600, y: 570, w: 60, h: 90 },
+  C27: { x: 600, y: 660, w: 60, h: 90 },
+  D01: { x: 750, y: 360, w: 300, h: 90 },
+  D02: { x: 1560, y: 150, w: 150, h: 120 },
+  D03: { x: 1710, y: 150, w: 150, h: 120 },
+  E01: { x: 900, y: 300, w: 120, h: 60 }
+};
+
+// Internal walls (SVG coords)
+const INTERNAL_WALLS = [
+  [[660,360],[1140,360]], [[660,450],[1140,450]],
+  [[480,300],[480,690]], [[660,300],[660,360]],
+  [[660,450],[660,900]], [[1140,360],[1140,300]],
+  [[1140,450],[1140,900]], [[1380,300],[1380,360]],
+  [[1380,450],[1380,900]], [[1560,360],[1380,360]],
+  [[1560,450],[1380,450]], [[1560,360],[1560,150]],
+  [[1560,450],[1560,570]], [[1560,270],[1860,270]],
+  [[1710,270],[1710,150]],
+  [[300,450],[60,450]], [[300,690],[300,450]],
+  [[300,690],[480,690]], [[900,360],[900,300]],
+  [[900,300],[1020,300]], [[1020,360],[1020,300]],
+  [[1380,300],[1140,300]]
+];
+
+// Nav points for zones (camera positions)
+const ZONE_VIEWS = {
+  'overview': { pos: [0, 70, 0], target: [0, 0, 0] },
+  'zone-a':   { pos: [25, 20, -10], target: [25, 0, -5] },
+  'zone-b':   { pos: [75, 20, 5], target: [75, 0, 0] },
+  'zone-c':   { pos: [-55, 30, -10], target: [-50, 0, -5] },
+  'zone-d':   { pos: [5, 18, 10], target: [5, 0, 5] },
+  'zone-e':   { pos: [-2, 12, 12], target: [-2, 0, 10] },
+  'entrance':  { pos: [18, 12, -28], target: [18, 0, -24] }
+};
+
+const ENTRANCE_SVG = { x: 1140, y: 800 };
+const EXIT_SVG = { x: 660, y: 800 };
+
+// ================================================================
+//  THREE.JS SETUP
+// ================================================================
+
+let scene, camera, renderer;
+let standMeshes = {};
+let raycaster, mouse;
+let clock;
+let cameraTransition = null;
+let activeZone = null;
+
+const canvas = document.getElementById('canvas3d');
+
+// Orbit state
+let orbitState = {
+  target: new THREE.Vector3(0, 0, 0),
+  spherical: { radius: 70, theta: Math.PI / 2, phi: Math.PI / 4 },
+  isDragging: false,
+  prevMouse: { x: 0, y: 0 }
+};
+
+let touchStartDist = 0;
+let touchStartRadius = 0;
+
+function init() {
+  clock = new THREE.Clock();
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a1a2e);
+  scene.fog = new THREE.Fog(0x1a1a2e, 120, 200);
+
+  camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 500);
+  camera.position.set(0, 70, 0);
+  camera.lookAt(0, 0, 0);
+
+  renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2();
+
+  setupLights();
+  buildGround();
+  buildBuildingFloor();
+  buildZoneFloors();
+  buildExternalWalls();
+  buildInternalWalls();
+  buildStands();
+  buildEntranceExit();
+  setupOrbitControls();
+  buildZoneNav();
+  buildLegend();
+
+  window.addEventListener('resize', onResize);
+  canvas.addEventListener('click', onCanvasClick);
+  canvas.addEventListener('mousemove', onCanvasMouseMove);
+
+  animate();
+
+  setTimeout(() => {
+    const ls = document.getElementById('loadingScreen');
+    ls.classList.add('fade-out');
+    setTimeout(() => ls.style.display = 'none', 500);
+  }, 600);
+}
+
+function setupLights() {
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.4);
+  hemi.position.set(0, 80, 0);
+  scene.add(hemi);
+
+  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(30, 60, 40);
+  dir.castShadow = true;
+  dir.shadow.mapSize.width = 2048;
+  dir.shadow.mapSize.height = 2048;
+  dir.shadow.camera.near = 1;
+  dir.shadow.camera.far = 200;
+  dir.shadow.camera.left = -100;
+  dir.shadow.camera.right = 100;
+  dir.shadow.camera.top = 100;
+  dir.shadow.camera.bottom = -100;
+  dir.shadow.bias = -0.001;
+  scene.add(dir);
+
+  const fill = new THREE.DirectionalLight(0x8888ff, 0.2);
+  fill.position.set(-20, 30, -20);
+  scene.add(fill);
+}
+
+// ================================================================
+//  GROUND & FLOORS
+// ================================================================
+
+function buildGround() {
+  const geo = new THREE.PlaneGeometry(300, 300);
+  const mat = new THREE.MeshStandardMaterial({ color: 0x2a2a3e, roughness: 0.9 });
+  const ground = new THREE.Mesh(geo, mat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.05;
+  ground.receiveShadow = true;
+  scene.add(ground);
+}
+
+function createShapeFromSVGPoints(points) {
+  const shape = new THREE.Shape();
+  const first = svgTo3D(points[0][0], points[0][1]);
+  shape.moveTo(first.x, first.z);
+  for (let i = 1; i < points.length; i++) {
+    const p = svgTo3D(points[i][0], points[i][1]);
+    shape.lineTo(p.x, p.z);
+  }
+  shape.lineTo(first.x, first.z);
+  return shape;
+}
+
+function buildBuildingFloor() {
+  const shape = createShapeFromSVGPoints(BUILDING_SVG);
+  const geo = new THREE.ShapeGeometry(shape);
+  const mat = new THREE.MeshStandardMaterial({ color: 0xe8e8e8, roughness: 0.6, side: THREE.DoubleSide });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = 0.01;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+}
+
+function buildZoneFloors() {
+  for (const [key, points] of Object.entries(ZONE_SHAPES_SVG)) {
+    const zoneKey = key.replace(/-\d+$/, '');
+    const color = ZONE_COLORS_HEX[zoneKey] || 0xcccccc;
+    const shape = createShapeFromSVGPoints(points);
+    const geo = new THREE.ShapeGeometry(shape);
+    const mat = new THREE.MeshStandardMaterial({ color, transparent: true, opacity: 0.3, roughness: 0.5, side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.y = 0.02;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+  }
+}
+
+// ================================================================
+//  WALLS
+// ================================================================
+
+function buildExternalWalls() {
+  const wallHeight = 4;
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xd0d0d8, transparent: true, opacity: 0.35, roughness: 0.3, side: THREE.DoubleSide });
+
+  for (let i = 0; i < BUILDING_SVG.length; i++) {
+    const a = BUILDING_SVG[i];
+    const b = BUILDING_SVG[(i + 1) % BUILDING_SVG.length];
+    const p1 = svgTo3D(a[0], a[1]);
+    const p2 = svgTo3D(b[0], b[1]);
+    const dx = p2.x - p1.x, dz = p2.z - p1.z;
+    const len = Math.sqrt(dx * dx + dz * dz);
+    if (len < 0.01) continue;
+
+    const geo = new THREE.PlaneGeometry(len, wallHeight);
+    const wall = new THREE.Mesh(geo, wallMat);
+    wall.position.set((p1.x + p2.x) / 2, wallHeight / 2, (p1.z + p2.z) / 2);
+    wall.rotation.y = -Math.atan2(dz, dx);
+    scene.add(wall);
+  }
+}
+
+function buildInternalWalls() {
+  const wallHeight = 3.5;
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xb0b0b8, transparent: true, opacity: 0.25, roughness: 0.4, side: THREE.DoubleSide });
+
+  for (const seg of INTERNAL_WALLS) {
+    const p1 = svgTo3D(seg[0][0], seg[0][1]);
+    const p2 = svgTo3D(seg[1][0], seg[1][1]);
+    const dx = p2.x - p1.x, dz = p2.z - p1.z;
+    const len = Math.sqrt(dx * dx + dz * dz);
+    if (len < 0.01) continue;
+
+    const geo = new THREE.PlaneGeometry(len, wallHeight);
+    const wall = new THREE.Mesh(geo, wallMat);
+    wall.position.set((p1.x + p2.x) / 2, wallHeight / 2, (p1.z + p2.z) / 2);
+    wall.rotation.y = -Math.atan2(dz, dx);
+    scene.add(wall);
+  }
+}
+
+// ================================================================
+//  STANDS (TABLE + LABEL)
+// ================================================================
+
+function createLabelTexture(standId, standName, zoneColor) {
+  const size = 256;
+  const cvs = document.createElement('canvas');
+  cvs.width = size;
+  cvs.height = size;
+  const ctx = cvs.getContext('2d');
+
+  ctx.fillStyle = zoneColor;
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(2, 2, size - 4, size - 4);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur = 6;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+
+  // Stand ID
+  ctx.font = 'bold 56px Inter, Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(standId, size / 2, size / 2 - 20);
+
+  // Stand name (truncated)
+  ctx.shadowBlur = 3;
+  ctx.font = '600 22px Inter, Arial, sans-serif';
+  const displayName = standName.length > 16 ? standName.substring(0, 15) + '...' : standName;
+  ctx.fillText(displayName, size / 2, size / 2 + 30);
+
+  const tex = new THREE.CanvasTexture(cvs);
+  tex.encoding = THREE.sRGBEncoding;
+  return tex;
+}
+
+function createTableMesh(width, depth, color, standId, zoneId) {
+  const group = new THREE.Group();
+  const cssColor = ZONE_CSS[zoneId] || '#cccccc';
+  const threeColor = new THREE.Color(color);
+  const topColor = threeColor.clone(); topColor.offsetHSL(0, -0.05, 0.1);
+  const legColor = threeColor.clone(); legColor.offsetHSL(0, 0, -0.15);
+
+  // Get stand name from data
+  const data = standsData.find(s => s.id === standId);
+  const standName = data ? data.name : standId;
+
+  const labelTex = createLabelTexture(standId, standName, cssColor);
+
+  const topMat = new THREE.MeshStandardMaterial({ map: labelTex, roughness: 0.4 });
+  const sideMat = new THREE.MeshStandardMaterial({ color: topColor, roughness: 0.5 });
+  const bottomMat = new THREE.MeshStandardMaterial({ color: topColor, roughness: 0.6 });
+  const slabMaterials = [sideMat, sideMat, topMat, bottomMat, sideMat, sideMat];
+
+  const slabGeo = new THREE.BoxGeometry(width, 0.15, depth);
+  const slab = new THREE.Mesh(slabGeo, slabMaterials);
+  slab.position.y = 0.85;
+  slab.castShadow = true;
+  slab.receiveShadow = true;
+  group.add(slab);
+
+  const legMat = new THREE.MeshStandardMaterial({ color: legColor, roughness: 0.6 });
+  const legGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 6);
+  const insetX = width * 0.38, insetZ = depth * 0.38;
+  const legPositions = [[-insetX, 0.4, -insetZ], [insetX, 0.4, -insetZ], [-insetX, 0.4, insetZ], [insetX, 0.4, insetZ]];
+
+  for (const lp of legPositions) {
+    const leg = new THREE.Mesh(legGeo, legMat);
+    leg.position.set(lp[0], lp[1], lp[2]);
+    leg.castShadow = true;
+    group.add(leg);
+  }
+
+  return group;
+}
+
+function buildStands() {
+  const shrink = 0.85;
+  for (const [id, rect] of Object.entries(STAND_RECTS_SVG)) {
+    const cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
+    const center3D = svgTo3D(cx, cy);
+    const w3D = (rect.w / S) * shrink, d3D = (rect.h / S) * shrink;
+    const zoneId = getStandZone(id);
+    const zoneColor = ZONE_COLORS_HEX[zoneId] || 0xcccccc;
+
+    const table = createTableMesh(w3D, d3D, zoneColor, id, zoneId);
+    table.position.set(center3D.x, 0, center3D.z);
+    table.userData = { standId: id };
+    standMeshes[id] = table;
+    scene.add(table);
+  }
+}
+
+function getStandZone(id) {
+  const letter = id.charAt(0).toUpperCase();
+  switch (letter) {
+    case 'A': return 'zone-a';
+    case 'B': return 'zone-b';
+    case 'C': return 'zone-c';
+    case 'D': return 'zone-d';
+    case 'E': return 'zone-e';
+    default: return 'zone-c';
+  }
+}
+
+// ================================================================
+//  ENTRANCE & EXIT MARKERS
+// ================================================================
+
+function buildEntranceExit() {
+  const entrPos = svgTo3D(ENTRANCE_SVG.x, ENTRANCE_SVG.y);
+  createMarker(entrPos.x, entrPos.z, 0x4ade80, 'ENTREE');
+  const exitPos = svgTo3D(EXIT_SVG.x, EXIT_SVG.y);
+  createMarker(exitPos.x, exitPos.z, 0xef4444, 'SORTIE');
+}
+
+function createMarker(x, z, color, label) {
+  const group = new THREE.Group();
+  const cylGeo = new THREE.CylinderGeometry(0.5, 0.5, 2, 16);
+  const cylMat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3, roughness: 0.3 });
+  const cyl = new THREE.Mesh(cylGeo, cylMat);
+  cyl.position.y = 1; cyl.castShadow = true;
+  group.add(cyl);
+
+  const ringGeo = new THREE.TorusGeometry(0.7, 0.08, 8, 16);
+  const ring = new THREE.Mesh(ringGeo, new THREE.MeshStandardMaterial({ color }));
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 2.1;
+  group.add(ring);
+
+  const cvs = document.createElement('canvas');
+  cvs.width = 256; cvs.height = 64;
+  const ctx = cvs.getContext('2d');
+  ctx.fillStyle = new THREE.Color(color).getStyle();
+  ctx.font = 'bold 40px Inter, Arial, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(label, 128, 32);
+  const tex = new THREE.CanvasTexture(cvs);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sprite.position.y = 3; sprite.scale.set(4, 1, 1);
+  group.add(sprite);
+
+  group.position.set(x, 0, z);
+  scene.add(group);
+}
+
+// ================================================================
+//  ORBIT CONTROLS
+// ================================================================
+
+function setupOrbitControls() {
+  canvas.addEventListener('mousedown', e => {
+    if (e.target.id && e.target.id.startsWith('STAND_')) return;
+    orbitState.isDragging = true;
+    orbitState.prevMouse = { x: e.clientX, y: e.clientY };
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!orbitState.isDragging) return;
+    const dx = e.clientX - orbitState.prevMouse.x;
+    const dy = e.clientY - orbitState.prevMouse.y;
+    orbitState.spherical.theta -= dx * 0.005;
+    orbitState.spherical.phi -= dy * 0.005;
+    orbitState.spherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.01, orbitState.spherical.phi));
+    orbitState.prevMouse = { x: e.clientX, y: e.clientY };
+    updateOrbitCamera();
+  });
+
+  window.addEventListener('mouseup', () => { orbitState.isDragging = false; });
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    orbitState.spherical.radius += e.deltaY * 0.05;
+    orbitState.spherical.radius = Math.max(5, Math.min(150, orbitState.spherical.radius));
+    updateOrbitCamera();
+  }, { passive: false });
+
+  // Touch support
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      orbitState.isDragging = true;
+      orbitState.prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    } else if (e.touches.length === 2) {
+      e.preventDefault();
+      orbitState.isDragging = false;
+      touchStartDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      touchStartRadius = orbitState.spherical.radius;
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 1 && orbitState.isDragging) {
+      const dx = e.touches[0].clientX - orbitState.prevMouse.x;
+      const dy = e.touches[0].clientY - orbitState.prevMouse.y;
+      orbitState.spherical.theta -= dx * 0.005;
+      orbitState.spherical.phi -= dy * 0.005;
+      orbitState.spherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.01, orbitState.spherical.phi));
+      orbitState.prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      updateOrbitCamera();
+    } else if (e.touches.length === 2) {
+      e.preventDefault();
+      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      orbitState.spherical.radius = Math.max(5, Math.min(150, touchStartRadius * (touchStartDist / dist)));
+      updateOrbitCamera();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', () => { orbitState.isDragging = false; });
+
+  updateOrbitCamera();
+}
+
+function updateOrbitCamera() {
+  const s = orbitState.spherical;
+  camera.position.set(
+    orbitState.target.x + s.radius * Math.sin(s.phi) * Math.sin(s.theta),
+    orbitState.target.y + s.radius * Math.cos(s.phi),
+    orbitState.target.z + s.radius * Math.sin(s.phi) * Math.cos(s.theta)
+  );
+  camera.lookAt(orbitState.target);
+}
+
+// ================================================================
+//  CAMERA ANIMATION
+// ================================================================
+
+function animateCamera(fromPos, toPos, fromTarget, toTarget, duration, onComplete) {
+  cameraTransition = {
+    fromPos: fromPos.clone(),
+    toPos: toPos.clone(),
+    fromTarget: fromTarget ? fromTarget.clone() : null,
+    toTarget: toTarget ? toTarget.clone() : null,
+    duration,
+    startTime: performance.now(),
+    onComplete
+  };
+}
+
+function updateCameraTransition() {
+  if (!cameraTransition) return;
+  const elapsed = performance.now() - cameraTransition.startTime;
+  let t = Math.min(elapsed / cameraTransition.duration, 1);
+  t = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  camera.position.lerpVectors(cameraTransition.fromPos, cameraTransition.toPos, t);
+  if (cameraTransition.toTarget) {
+    const lookTarget = new THREE.Vector3();
+    if (cameraTransition.fromTarget) {
+      lookTarget.lerpVectors(cameraTransition.fromTarget, cameraTransition.toTarget, t);
+    } else {
+      lookTarget.copy(cameraTransition.toTarget);
+    }
+    camera.lookAt(lookTarget);
+  }
+
+  if (t >= 1) {
+    if (cameraTransition.onComplete) cameraTransition.onComplete();
+    cameraTransition = null;
+  }
+}
+
+function navigateToZone(zoneKey) {
+  const view = ZONE_VIEWS[zoneKey];
+  if (!view) return;
+
+  const startPos = camera.position.clone();
+  const endPos = new THREE.Vector3(view.pos[0], view.pos[1], view.pos[2]);
+  const startTarget = orbitState.target.clone();
+  const endTarget = new THREE.Vector3(view.target[0], view.target[1], view.target[2]);
+
+  animateCamera(startPos, endPos, startTarget, endTarget, 900, function() {
+    orbitState.target.copy(endTarget);
+    const dx = endPos.x - endTarget.x, dy = endPos.y - endTarget.y, dz = endPos.z - endTarget.z;
+    orbitState.spherical.radius = Math.sqrt(dx*dx + dy*dy + dz*dz);
+    orbitState.spherical.phi = Math.acos(dy / orbitState.spherical.radius);
+    orbitState.spherical.theta = Math.atan2(dx, dz);
+  });
+
+  // Update active state
+  activeZone = zoneKey;
+  document.querySelectorAll('.zone-nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.zone === zoneKey);
+  });
+
+  // Update info panel
+  updateZoneInfoPanel(zoneKey);
+}
+
+// ================================================================
+//  ZONE NAVIGATION (bottom bar)
+// ================================================================
+
+function buildZoneNav() {
+  const scroll = document.getElementById('zoneNavScroll');
+
+  const items = [
+    { key: 'overview', label: 'Vue d\'ensemble', color: 'var(--primary)', dot: '#4361ee' },
+    { key: 'zone-a', label: 'Accueil', color: ZONE_CSS['zone-a'], dot: ZONE_CSS['zone-a'] },
+    { key: 'zone-b', label: 'Interim', color: ZONE_CSS['zone-b'], dot: ZONE_CSS['zone-b'] },
+    { key: 'zone-c', label: 'Entreprises', color: ZONE_CSS['zone-c'], dot: ZONE_CSS['zone-c'] },
+    { key: 'zone-d', label: 'Offres & Salles', color: ZONE_CSS['zone-d'], dot: ZONE_CSS['zone-d'] },
+    { key: 'entrance', label: 'Entree', color: '#4ade80', dot: '#4ade80' }
+  ];
+
+  items.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'zone-nav-btn' + (item.key === 'overview' ? ' active' : '');
+    btn.dataset.zone = item.key;
+
+    // Count stands in zone
+    let count = 0;
+    if (item.key !== 'overview' && item.key !== 'entrance') {
+      count = standsData.filter(s => s.zone === item.key).length;
+    }
+
+    btn.innerHTML = `<span class="zn-dot" style="background:${item.dot}"></span>${item.label}${count > 0 ? '<span class="zn-count">' + count + '</span>' : ''}`;
+    btn.onclick = () => navigateToZone(item.key);
+    scroll.appendChild(btn);
+  });
+}
+
+function buildLegend() {
+  const legend = document.getElementById('legendCompact');
+  const zones = [
+    { id: 'zone-a', label: 'A' },
+    { id: 'zone-b', label: 'B' },
+    { id: 'zone-c', label: 'C' },
+    { id: 'zone-d', label: 'D' },
+    { id: 'zone-e', label: 'E' }
+  ];
+  legend.innerHTML = zones.map(z =>
+    `<span class="legend-chip"><span class="lc-dot" style="background:${ZONE_CSS[z.id]}"></span>${z.label}</span>`
+  ).join('');
+}
+
+function updateZoneInfoPanel(zoneKey) {
+  const panel = document.getElementById('zoneInfoPanel');
+
+  if (zoneKey === 'overview' || zoneKey === 'entrance') {
+    panel.classList.remove('visible');
+    return;
+  }
+
+  const info = ZONE_INFO[zoneKey];
+  if (!info) { panel.classList.remove('visible'); return; }
+
+  const color = ZONE_CSS[zoneKey] || '#888';
+  const count = standsData.filter(s => s.zone === zoneKey).length;
+
+  document.getElementById('ziDot').style.background = color;
+  document.getElementById('ziTitle').textContent = info.label;
+  document.getElementById('ziDesc').textContent = info.desc;
+  document.getElementById('ziStands').innerHTML = '<strong>' + count + '</strong> stands dans cette zone';
+
+  panel.classList.add('visible');
+}
+
+// ================================================================
+//  RAYCASTING & TOOLTIP
+// ================================================================
+
+function onCanvasClick(e) {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const allMeshes = [];
+  for (const [id, group] of Object.entries(standMeshes)) {
+    group.traverse(child => {
+      if (child.isMesh) { child.userData.standId = id; allMeshes.push(child); }
+    });
+  }
+
+  const intersects = raycaster.intersectObjects(allMeshes, false);
+  if (intersects.length > 0) {
+    const sid = intersects[0].object.userData.standId;
+    if (sid) showTooltip(sid, e.clientX, e.clientY);
+  } else {
+    closeTooltip();
+  }
+}
+
+function onCanvasMouseMove(e) {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const allMeshes = [];
+  for (const [id, group] of Object.entries(standMeshes)) {
+    group.traverse(child => {
+      if (child.isMesh) { child.userData.standId = id; allMeshes.push(child); }
+    });
+  }
+  const intersects = raycaster.intersectObjects(allMeshes, false);
+  canvas.style.cursor = intersects.length > 0 ? 'pointer' : 'grab';
+}
+
+function showTooltip(standId, mx, my) {
+  const tooltip = document.getElementById('standTooltip');
+  const data = standsData.find(s => s.id === standId);
+  const zoneId = getStandZone(standId);
+  const color = ZONE_CSS[zoneId] || '#888';
+  const info = ZONE_INFO[zoneId] || { label: zoneId };
+
+  // Badge
+  const badge = document.getElementById('ttBadge');
+  badge.textContent = standId;
+  badge.style.background = color;
+
+  // Name
+  document.getElementById('ttName').textContent = data ? data.name : 'Stand ' + standId;
+
+  // Zone tag
+  document.getElementById('ttZoneDot').style.background = color;
+  document.getElementById('ttZoneTag').style.background = color + '20';
+  document.getElementById('ttZoneTag').style.color = color;
+  document.getElementById('ttZoneLabel').textContent = info.label;
+
+  // Details
+  let details = '';
+  if (data) {
+    if (data.sector) details += '<strong>Secteur:</strong> ' + data.sector + '<br>';
+    if (data.jobs) details += '<strong>Postes:</strong> ' + data.jobs + '<br>';
+    if (data.age) details += '<strong>Age:</strong> ' + data.age + '<br>';
+    if (data.description) details += '<br>' + data.description;
+  }
+  document.getElementById('ttDetails').innerHTML = details || '<em>Pas de details disponibles</em>';
+
+  // Position
+  const tw = 280;
+  let tx = mx + 15, ty = my - 10;
+  if (tx + tw > window.innerWidth) tx = mx - tw - 15;
+  if (ty + 220 > window.innerHeight) ty = window.innerHeight - 230;
+  if (ty < 64) ty = 80;
+
+  tooltip.style.left = tx + 'px';
+  tooltip.style.top = ty + 'px';
+  tooltip.classList.add('visible');
+}
+
+function closeTooltip() {
+  document.getElementById('standTooltip').classList.remove('visible');
+}
+
+// ================================================================
+//  RESIZE & ANIMATE
+// ================================================================
+
+function onResize() {
+  camera.aspect = canvas.clientWidth / canvas.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  updateCameraTransition();
+  renderer.render(scene, camera);
+}
+
+// ================================================================
+//  INIT
+// ================================================================
+
+loadStandsData().then(function() {
+  init();
+});
+</script>
+</body>
+</html>

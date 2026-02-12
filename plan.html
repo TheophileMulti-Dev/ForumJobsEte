@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Plan 2D - Forum Jobs d'été 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/shared.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* ========== PAGE LAYOUT ========== */
+    body {
+      background: #1a1a2e;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .plan-wrapper {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+      background: #1a1a2e;
+    }
+
+    /* ========== TOOLBAR ========== */
+    .plan-toolbar {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .plan-toolbar > * {
+      pointer-events: auto;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 14, 23, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 6px;
+    }
+
+    .toolbar-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 18px;
+    }
+
+    .toolbar-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .toolbar-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .toolbar-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .toolbar-divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.1);
+      margin: 0 2px;
+    }
+
+    .zoom-label {
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 44px;
+      text-align: center;
+      user-select: none;
+    }
+
+    /* ========== SEARCH BAR ========== */
+    .plan-search {
+      position: relative;
+      min-width: 240px;
+    }
+
+    .plan-search input {
+      width: 100%;
+      padding: 10px 14px 10px 40px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      background: rgba(15, 14, 23, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: white;
+      font-size: 14px;
+      font-family: var(--font);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .plan-search input::placeholder {
+      color: rgba(255,255,255,0.35);
+    }
+
+    .plan-search input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67,97,238,0.2);
+    }
+
+    .plan-search .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.35);
+      pointer-events: none;
+    }
+
+    .search-results {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: rgba(15, 14, 23, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      max-height: 280px;
+      overflow-y: auto;
+      display: none;
+      z-index: 200;
+    }
+
+    .search-results.visible {
+      display: block;
+    }
+
+    .search-result-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-result-item:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .search-result-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .search-result-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .search-result-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-result-meta {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ========== SVG CONTAINER ========== */
+    .plan-container {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .plan-container.grabbing {
+      cursor: grabbing;
+    }
+
+    .plan-container svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+    }
+
+    /* ========== SVG STAND STYLES ========== */
+    .plan-container svg [id^="STAND_"] {
+      cursor: pointer;
+      transition: filter 0.2s, opacity 0.2s;
+      stroke: transparent;
+      stroke-width: 2;
+    }
+
+    .plan-container svg [id^="STAND_"]:hover {
+      filter: brightness(1.3);
+      stroke: rgba(255,255,255,0.6);
+    }
+
+    .plan-container svg [id^="STAND_"].stand-selected {
+      stroke: var(--primary);
+      stroke-width: 3;
+      filter: brightness(1.4) drop-shadow(0 0 8px rgba(67,97,238,0.5));
+    }
+
+    .plan-container svg [id^="STAND_"].stand-highlighted {
+      animation: standPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes standPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.6) drop-shadow(0 0 12px rgba(67,97,238,0.6)); }
+    }
+
+    /* ========== ROUTE STYLES ========== */
+    .plan-container svg .route-line {
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 4;
+      stroke-dasharray: 12 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .plan-container svg .route-line.route-visible {
+      opacity: 1;
+      animation: routeDash 1s linear infinite;
+    }
+
+    @keyframes routeDash {
+      to { stroke-dashoffset: -18; }
+    }
+
+    .plan-container svg .route-marker {
+      fill: var(--primary);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .plan-container svg .route-marker.route-visible {
+      opacity: 1;
+      animation: markerPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes markerPulse {
+      0%, 100% { r: 8; }
+      50% { r: 12; }
+    }
+
+    /* ========== STAND LABELS ========== */
+    .stand-label {
+      position: absolute;
+      pointer-events: none;
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(0,0,0,0.7);
+      text-align: center;
+      white-space: nowrap;
+      opacity: 0;
+      transform-origin: center center;
+      transition: opacity 0.3s;
+      text-shadow: 0 0 3px rgba(255,255,255,0.8);
+    }
+
+    .stand-label.labels-visible {
+      opacity: 1;
+    }
+
+    /* ========== TOOLTIP ========== */
+    .stand-tooltip {
+      position: absolute;
+      z-index: 300;
+      width: 300px;
+      background: rgba(15, 14, 23, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 0.25s, transform 0.25s;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .stand-tooltip.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .tooltip-header {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .tooltip-header-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tooltip-zone-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 6px;
+    }
+
+    .tooltip-zone-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .tooltip-name {
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: white;
+    }
+
+    .tooltip-id {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .tooltip-close {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .tooltip-close:hover {
+      background: rgba(255,255,255,0.12);
+      color: white;
+    }
+
+    .tooltip-body {
+      padding: 12px 18px 16px;
+    }
+
+    .tooltip-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 5px 0;
+    }
+
+    .tooltip-row-icon {
+      width: 16px;
+      flex-shrink: 0;
+      color: rgba(255,255,255,0.3);
+      font-size: 13px;
+      text-align: center;
+      margin-top: 1px;
+    }
+
+    .tooltip-row-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      min-width: 60px;
+      flex-shrink: 0;
+    }
+
+    .tooltip-row-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      flex: 1;
+    }
+
+    .tooltip-description {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.5;
+      padding: 8px 0 4px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 6px;
+    }
+
+    .tooltip-actions {
+      padding: 12px 18px 14px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      gap: 8px;
+    }
+
+    .tooltip-btn {
+      flex: 1;
+      padding: 9px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tooltip-btn-route {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tooltip-btn-route:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .tooltip-btn-route.route-active {
+      background: var(--accent);
+    }
+
+    .tooltip-btn-close-route {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.7);
+    }
+
+    .tooltip-btn-close-route:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    /* ========== ZONE LEGEND ========== */
+    .zone-legend {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      z-index: 100;
+      background: rgba(15, 14, 23, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .legend-item:hover {
+      opacity: 1;
+    }
+
+    .legend-item.legend-dimmed {
+      opacity: 0.3;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+    }
+
+    .legend-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ========== MINIMAP ========== */
+    .minimap {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 100;
+      width: 180px;
+      height: 102px;
+      background: rgba(15, 14, 23, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .minimap svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .minimap-viewport {
+      fill: rgba(67,97,238,0.15);
+      stroke: var(--primary);
+      stroke-width: 2;
+    }
+
+    /* ========== LOADING ========== */
+    .plan-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      background: #1a1a2e;
+      z-index: 500;
+      transition: opacity 0.4s;
+    }
+
+    .plan-loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+    }
+
+    /* ========== FULLSCREEN ========== */
+    .plan-wrapper.fullscreen {
+      top: 0;
+      z-index: 2000;
+    }
+
+    .plan-wrapper.fullscreen .topnav-hider {
+      display: block;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .plan-toolbar {
+        flex-wrap: wrap;
+      }
+
+      .plan-search {
+        order: 10;
+        min-width: 100%;
+      }
+
+      .zone-legend {
+        font-size: 11px;
+        gap: 8px;
+        padding: 8px 12px;
+        bottom: 8px;
+        left: 8px;
+        right: 8px;
+        justify-content: center;
+      }
+
+      .minimap {
+        display: none;
+      }
+
+      .stand-tooltip {
+        width: 260px;
+      }
+    }
+
+    /* ========== PDF EXPORT MODE ========== */
+    .pdf-mode .stand-label {
+      opacity: 1 !important;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <span class="logo-dot">F</span>
+      Forum Jobs
+    </a>
+    <button class="topnav-mobile-btn" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    <div class="topnav-links">
+      <a href="index.html">Accueil</a>
+      <a href="plan.html" class="active">Plan 2D</a>
+      <a href="liste.html">Liste</a>
+      <a href="vue3d.html">Vue 3D</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Plan Area -->
+<div class="plan-wrapper" id="planWrapper">
+  <!-- Loading -->
+  <div class="plan-loading" id="planLoading">
+    <div class="loading-spinner"></div>
+    <span class="loading-text">Chargement du plan...</span>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="plan-toolbar">
+    <div class="toolbar-group">
+      <!-- Zoom controls -->
+      <button class="toolbar-btn" id="btnZoomIn" title="Zoom avant">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <span class="zoom-label" id="zoomLabel">100%</span>
+      <button class="toolbar-btn" id="btnZoomOut" title="Zoom arriere">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <div class="toolbar-divider"></div>
+      <button class="toolbar-btn" id="btnFitView" title="Vue complete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>
+      </button>
+      <button class="toolbar-btn" id="btnResetView" title="Recentrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="plan-search">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Rechercher un stand..." autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div class="toolbar-group">
+      <!-- Labels toggle -->
+      <button class="toolbar-btn" id="btnLabels" title="Afficher les noms">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+      </button>
+      <div class="toolbar-divider"></div>
+      <!-- Fullscreen -->
+      <button class="toolbar-btn" id="btnFullscreen" title="Plein ecran">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3"/></svg>
+      </button>
+      <!-- PDF export -->
+      <button class="toolbar-btn" id="btnExportPdf" title="Exporter en PDF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- SVG Container -->
+  <div class="plan-container" id="planContainer"></div>
+
+  <!-- Tooltip -->
+  <div class="stand-tooltip" id="standTooltip">
+    <div class="tooltip-header">
+      <div class="tooltip-header-info">
+        <div class="tooltip-zone-badge" id="tooltipZoneBadge">
+          <span class="tooltip-zone-dot" id="tooltipZoneDot"></span>
+          <span id="tooltipZoneLabel"></span>
+        </div>
+        <div class="tooltip-name" id="tooltipName"></div>
+        <div class="tooltip-id" id="tooltipId"></div>
+      </div>
+      <button class="tooltip-close" id="tooltipClose">&times;</button>
+    </div>
+    <div class="tooltip-body" id="tooltipBody"></div>
+    <div class="tooltip-actions" id="tooltipActions">
+      <button class="tooltip-btn tooltip-btn-route" id="btnRoute">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+        Voir l'itineraire
+      </button>
+    </div>
+  </div>
+
+  <!-- Zone Legend -->
+  <div class="zone-legend" id="zoneLegend"></div>
+
+  <!-- Minimap -->
+  <div class="minimap" id="minimap">
+    <svg viewBox="0 0 1920 1080" id="minimapSvg">
+      <rect class="minimap-viewport" id="minimapViewport" x="0" y="0" width="100" height="100"/>
+    </svg>
+  </div>
+</div>
+
+<!-- Data -->
+<script src="js/data.js"></script>
+
+<script>
+(function() {
+  'use strict';
+
+  // ================================================================
+  //  STATE
+  // ================================================================
+  const state = {
+    svgEl: null,
+    svgOrigW: 1920,
+    svgOrigH: 1080,
+    scale: 1,
+    minScale: 0.3,
+    maxScale: 5,
+    panX: 0,
+    panY: 0,
+    isDragging: false,
+    dragStartX: 0,
+    dragStartY: 0,
+    panStartX: 0,
+    panStartY: 0,
+    selectedStand: null,
+    activeRoute: null,
+    labelsVisible: false,
+    isFullscreen: false,
+    stands: [],
+    labels: [],
+    // Pinch state
+    pinchStartDist: 0,
+    pinchStartScale: 1
+  };
+
+  // ================================================================
+  //  DOM REFS
+  // ================================================================
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+
+  const container = $('#planContainer');
+  const wrapper = $('#planWrapper');
+  const loading = $('#planLoading');
+  const tooltip = $('#standTooltip');
+  const searchInput = $('#searchInput');
+  const searchResults = $('#searchResults');
+  const zoomLabel = $('#zoomLabel');
+  const minimapSvg = $('#minimapSvg');
+  const minimapViewport = $('#minimapViewport');
+
+  // ================================================================
+  //  ZONE COLORS (from shared data)
+  // ================================================================
+  const zoneColors = {
+    'zone-a': '#8cc63f',
+    'zone-b': '#29abe2',
+    'zone-c': '#ed1c24',
+    'zone-d': '#f7931e',
+    'zone-e': '#fcee21'
+  };
+
+  const zoneLabels = {
+    'zone-a': 'Zone A',
+    'zone-b': 'Zone B',
+    'zone-c': 'Zone C',
+    'zone-d': 'Zone D',
+    'zone-e': 'Zone E'
+  };
+
+  // ================================================================
+  //  INIT
+  // ================================================================
+  async function init() {
+    // Load stands data
+    state.stands = await loadStandsData();
+
+    // Load SVG
+    try {
+      const resp = await fetch('plan.svg');
+      const svgText = await resp.text();
+      container.innerHTML = svgText;
+      state.svgEl = container.querySelector('svg');
+    } catch (e) {
+      loading.innerHTML = '<span class="loading-text" style="color:#f72585">Erreur: impossible de charger plan.svg</span>';
+      return;
+    }
+
+    // Setup
+    setupSvgStyles();
+    setupPanZoom();
+    setupStandClicks();
+    setupLabels();
+    setupToolbar();
+    setupSearch();
+    setupLegend();
+    setupMinimap();
+    fitView();
+
+    // Hide loading
+    setTimeout(() => {
+      loading.classList.add('hidden');
+      // Check URL hash for stand to highlight
+      checkHashStand();
+    }, 300);
+  }
+
+  // ================================================================
+  //  HASH-BASED STAND SELECTION
+  // ================================================================
+  function checkHashStand() {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) return;
+    const standId = decodeURIComponent(hash);
+    const svgEl = state.svgEl.querySelector('#STAND_' + standId);
+    if (svgEl) {
+      // Small delay to ensure SVG is fully rendered and positioned
+      setTimeout(() => {
+        selectStand(standId, svgEl);
+      }, 200);
+    }
+  }
+
+  // Listen for hash changes (e.g. if user navigates with back/forward)
+  window.addEventListener('hashchange', () => {
+    checkHashStand();
+  });
+
+  // ================================================================
+  //  SVG STYLES INJECTION
+  // ================================================================
+  function setupSvgStyles() {
+    if (!state.svgEl) return;
+
+    // Make SVG fill container
+    state.svgEl.style.width = state.svgOrigW + 'px';
+    state.svgEl.style.height = state.svgOrigH + 'px';
+
+    // Ensure routes are hidden by default
+    state.svgEl.querySelectorAll('.route-line, .route-marker').forEach(el => {
+      el.style.opacity = '0';
+    });
+  }
+
+  // ================================================================
+  //  PAN & ZOOM
+  // ================================================================
+  function setupPanZoom() {
+    // Mouse wheel zoom
+    container.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -1 : 1;
+      const factor = 1 + delta * 0.1;
+      zoomAtPoint(e.clientX, e.clientY, factor);
+    }, { passive: false });
+
+    // Mouse drag
+    container.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      // Check if clicking a stand
+      if (e.target.id && e.target.id.startsWith('STAND_')) return;
+      startDrag(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!state.isDragging) return;
+      moveDrag(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('mouseup', () => {
+      endDrag();
+    });
+
+    // Touch support
+    let touchCount = 0;
+    container.addEventListener('touchstart', (e) => {
+      touchCount = e.touches.length;
+      if (touchCount === 1) {
+        const t = e.touches[0];
+        if (e.target.id && e.target.id.startsWith('STAND_')) return;
+        startDrag(t.clientX, t.clientY);
+      } else if (touchCount === 2) {
+        endDrag();
+        const d = getTouchDist(e.touches);
+        state.pinchStartDist = d;
+        state.pinchStartScale = state.scale;
+      }
+    }, { passive: false });
+
+    container.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (e.touches.length === 1 && state.isDragging) {
+        const t = e.touches[0];
+        moveDrag(t.clientX, t.clientY);
+      } else if (e.touches.length === 2) {
+        const d = getTouchDist(e.touches);
+        const factor = d / state.pinchStartDist;
+        const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        const newScale = Math.max(state.minScale, Math.min(state.maxScale, state.pinchStartScale * factor));
+        zoomToScale(cx, cy, newScale);
+      }
+    }, { passive: false });
+
+    container.addEventListener('touchend', () => {
+      endDrag();
+    });
+  }
+
+  function getTouchDist(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function startDrag(x, y) {
+    state.isDragging = true;
+    state.dragStartX = x;
+    state.dragStartY = y;
+    state.panStartX = state.panX;
+    state.panStartY = state.panY;
+    container.classList.add('grabbing');
+  }
+
+  function moveDrag(x, y) {
+    state.panX = state.panStartX + (x - state.dragStartX);
+    state.panY = state.panStartY + (y - state.dragStartY);
+    applyTransform();
+  }
+
+  function endDrag() {
+    state.isDragging = false;
+    container.classList.remove('grabbing');
+  }
+
+  function zoomAtPoint(cx, cy, factor) {
+    const rect = container.getBoundingClientRect();
+    const px = cx - rect.left;
+    const py = cy - rect.top;
+
+    const newScale = Math.max(state.minScale, Math.min(state.maxScale, state.scale * factor));
+    const ratio = newScale / state.scale;
+
+    state.panX = px - (px - state.panX) * ratio;
+    state.panY = py - (py - state.panY) * ratio;
+    state.scale = newScale;
+
+    applyTransform();
+  }
+
+  function zoomToScale(cx, cy, newScale) {
+    const rect = container.getBoundingClientRect();
+    const px = cx - rect.left;
+    const py = cy - rect.top;
+
+    const ratio = newScale / state.scale;
+    state.panX = px - (px - state.panX) * ratio;
+    state.panY = py - (py - state.panY) * ratio;
+    state.scale = newScale;
+
+    applyTransform();
+  }
+
+  function applyTransform() {
+    if (!state.svgEl) return;
+    state.svgEl.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.scale})`;
+    zoomLabel.textContent = Math.round(state.scale * 100) + '%';
+    updateLabelsPosition();
+    updateMinimap();
+  }
+
+  function fitView() {
+    const rect = container.getBoundingClientRect();
+    const padding = 40;
+    const scaleX = (rect.width - padding * 2) / state.svgOrigW;
+    const scaleY = (rect.height - padding * 2) / state.svgOrigH;
+    state.scale = Math.min(scaleX, scaleY);
+
+    state.panX = (rect.width - state.svgOrigW * state.scale) / 2;
+    state.panY = (rect.height - state.svgOrigH * state.scale) / 2;
+
+    applyTransform();
+  }
+
+  function resetView() {
+    state.scale = 1;
+    const rect = container.getBoundingClientRect();
+    state.panX = (rect.width - state.svgOrigW) / 2;
+    state.panY = (rect.height - state.svgOrigH) / 2;
+    applyTransform();
+  }
+
+  // ================================================================
+  //  STAND CLICKS
+  // ================================================================
+  function setupStandClicks() {
+    if (!state.svgEl) return;
+
+    state.svgEl.querySelectorAll('[id^="STAND_"]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const standId = el.id.replace('STAND_', '');
+        selectStand(standId, el);
+      });
+    });
+
+    // Click outside to deselect
+    container.addEventListener('click', (e) => {
+      if (!e.target.id || !e.target.id.startsWith('STAND_')) {
+        if (!tooltip.contains(e.target)) {
+          deselectStand();
+        }
+      }
+    });
+  }
+
+  function selectStand(standId, svgEl) {
+    // Deselect previous
+    if (state.selectedStand) {
+      const prev = state.svgEl.querySelector('#STAND_' + state.selectedStand);
+      if (prev) prev.classList.remove('stand-selected');
+    }
+
+    state.selectedStand = standId;
+    svgEl.classList.add('stand-selected');
+
+    // Zoom to stand
+    zoomToStand(svgEl);
+
+    // Show tooltip
+    showTooltip(standId, svgEl);
+  }
+
+  function deselectStand() {
+    if (state.selectedStand) {
+      const el = state.svgEl.querySelector('#STAND_' + state.selectedStand);
+      if (el) el.classList.remove('stand-selected');
+    }
+    state.selectedStand = null;
+    hideTooltip();
+    hideRoute();
+  }
+
+  function zoomToStand(svgEl) {
+    const bbox = svgEl.getBBox();
+    const cx = bbox.x + bbox.width / 2;
+    const cy = bbox.y + bbox.height / 2;
+
+    const rect = container.getBoundingClientRect();
+    const targetScale = 2;
+
+    state.scale = targetScale;
+    state.panX = rect.width / 2 - cx * targetScale;
+    state.panY = rect.height / 2 - cy * targetScale;
+
+    // Smooth transition
+    state.svgEl.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    applyTransform();
+    setTimeout(() => {
+      state.svgEl.style.transition = '';
+    }, 550);
+  }
+
+  // ================================================================
+  //  TOOLTIP
+  // ================================================================
+  function showTooltip(standId, svgEl) {
+    const data = state.stands.find(s => s.id === standId);
+    if (!data) {
+      // Still show basic tooltip
+      showBasicTooltip(standId, svgEl);
+      return;
+    }
+
+    const zone = data.zone || '';
+    const zoneColor = zoneColors[zone] || '#888';
+    const zoneLbl = zoneLabels[zone] || zone;
+
+    // Header
+    $('#tooltipZoneDot').style.background = zoneColor;
+    $('#tooltipZoneBadge').style.background = zoneColor + '18';
+    $('#tooltipZoneBadge').style.color = zoneColor;
+    $('#tooltipZoneLabel').textContent = zoneLbl;
+    $('#tooltipName').textContent = data.name;
+    $('#tooltipId').textContent = 'Stand ' + standId;
+
+    // Body
+    let bodyHtml = '';
+    if (data.sector) {
+      bodyHtml += `<div class="tooltip-row">
+        <span class="tooltip-row-icon">&#128188;</span>
+        <span class="tooltip-row-label">Secteur</span>
+        <span class="tooltip-row-value">${data.sector}</span>
+      </div>`;
+    }
+    if (data.jobs) {
+      bodyHtml += `<div class="tooltip-row">
+        <span class="tooltip-row-icon">&#128736;</span>
+        <span class="tooltip-row-label">Emplois</span>
+        <span class="tooltip-row-value">${data.jobs}</span>
+      </div>`;
+    }
+    if (data.age) {
+      bodyHtml += `<div class="tooltip-row">
+        <span class="tooltip-row-icon">&#128100;</span>
+        <span class="tooltip-row-label">Public</span>
+        <span class="tooltip-row-value">${data.age}</span>
+      </div>`;
+    }
+    if (data.description) {
+      bodyHtml += `<div class="tooltip-description">${data.description}</div>`;
+    }
+    $('#tooltipBody').innerHTML = bodyHtml;
+
+    // Route button
+    const routeEl = state.svgEl.querySelector('#ROUTE_STAND_' + standId);
+    const btnRoute = $('#btnRoute');
+    if (routeEl) {
+      btnRoute.style.display = '';
+      btnRoute.onclick = () => toggleRoute(standId);
+      if (state.activeRoute === standId) {
+        btnRoute.classList.add('route-active');
+        btnRoute.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Masquer l\'itineraire';
+      } else {
+        btnRoute.classList.remove('route-active');
+        btnRoute.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg> Voir l\'itineraire';
+      }
+    } else {
+      btnRoute.style.display = 'none';
+    }
+
+    // Position tooltip
+    positionTooltip(svgEl);
+
+    tooltip.classList.add('visible');
+  }
+
+  function showBasicTooltip(standId, svgEl) {
+    $('#tooltipZoneDot').style.background = '#888';
+    $('#tooltipZoneBadge').style.background = 'rgba(136,136,136,0.1)';
+    $('#tooltipZoneBadge').style.color = '#888';
+    $('#tooltipZoneLabel').textContent = 'Zone ' + standId.charAt(0);
+    $('#tooltipName').textContent = 'Stand ' + standId;
+    $('#tooltipId').textContent = '';
+    $('#tooltipBody').innerHTML = '';
+    $('#btnRoute').style.display = 'none';
+
+    positionTooltip(svgEl);
+    tooltip.classList.add('visible');
+  }
+
+  function positionTooltip(svgEl) {
+    const bbox = svgEl.getBBox();
+    const cx = bbox.x + bbox.width / 2;
+    const cy = bbox.y;
+
+    const screenX = cx * state.scale + state.panX;
+    const screenY = cy * state.scale + state.panY;
+
+    const wrapperRect = wrapper.getBoundingClientRect();
+    const navH = 64;
+
+    let left = screenX - 150;
+    let top = screenY + navH - 10;
+
+    // Keep in bounds
+    const tooltipW = 300;
+    const tooltipH = tooltip.offsetHeight || 250;
+
+    if (left < 10) left = 10;
+    if (left + tooltipW > wrapperRect.width - 10) left = wrapperRect.width - tooltipW - 10;
+    if (top + tooltipH > wrapperRect.height + navH - 10) {
+      top = screenY + navH - tooltipH - (bbox.height * state.scale) - 20;
+    }
+    if (top < navH + 70) top = navH + 70;
+
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = (top - navH) + 'px';
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove('visible');
+  }
+
+  // Tooltip close button
+  $('#tooltipClose').addEventListener('click', () => {
+    deselectStand();
+  });
+
+  // ================================================================
+  //  ROUTES
+  // ================================================================
+  function toggleRoute(standId) {
+    if (state.activeRoute === standId) {
+      hideRoute();
+    } else {
+      showRoute(standId);
+    }
+    // Update button state
+    if (state.selectedStand) {
+      const svgEl = state.svgEl.querySelector('#STAND_' + state.selectedStand);
+      if (svgEl) showTooltip(state.selectedStand, svgEl);
+    }
+  }
+
+  function showRoute(standId) {
+    hideRoute();
+    state.activeRoute = standId;
+
+    const routePath = state.svgEl.querySelector('#ROUTE_STAND_' + standId);
+    const marker = state.svgEl.querySelector('#MARKER_STAND_' + standId);
+    const endMarker = state.svgEl.querySelector('#END_MARKER_STAND_' + standId);
+
+    if (routePath) {
+      routePath.classList.add('route-visible');
+      routePath.style.opacity = '1';
+    }
+    if (marker) {
+      marker.classList.add('route-visible');
+      marker.style.opacity = '1';
+    }
+    if (endMarker) {
+      endMarker.classList.add('route-visible');
+      endMarker.style.opacity = '1';
+    }
+  }
+
+  function hideRoute() {
+    if (!state.activeRoute) return;
+
+    const routePath = state.svgEl.querySelector('#ROUTE_STAND_' + state.activeRoute);
+    const marker = state.svgEl.querySelector('#MARKER_STAND_' + state.activeRoute);
+    const endMarker = state.svgEl.querySelector('#END_MARKER_STAND_' + state.activeRoute);
+
+    if (routePath) {
+      routePath.classList.remove('route-visible');
+      routePath.style.opacity = '0';
+    }
+    if (marker) {
+      marker.classList.remove('route-visible');
+      marker.style.opacity = '0';
+    }
+    if (endMarker) {
+      endMarker.classList.remove('route-visible');
+      endMarker.style.opacity = '0';
+    }
+
+    state.activeRoute = null;
+  }
+
+  // ================================================================
+  //  STAND LABELS
+  // ================================================================
+  function setupLabels() {
+    if (!state.svgEl) return;
+
+    state.svgEl.querySelectorAll('[id^="STAND_"]').forEach(el => {
+      const standId = el.id.replace('STAND_', '');
+      const data = state.stands.find(s => s.id === standId);
+      const name = data ? data.id : standId;
+
+      const label = document.createElement('div');
+      label.className = 'stand-label';
+      label.textContent = name;
+      label.dataset.standId = standId;
+      wrapper.appendChild(label);
+      state.labels.push({ el: label, svgEl: el, standId });
+    });
+
+    updateLabelsPosition();
+  }
+
+  function updateLabelsPosition() {
+    state.labels.forEach(item => {
+      const bbox = item.svgEl.getBBox();
+      const cx = bbox.x + bbox.width / 2;
+      const cy = bbox.y + bbox.height / 2;
+
+      const screenX = cx * state.scale + state.panX;
+      const screenY = cy * state.scale + state.panY;
+
+      item.el.style.left = screenX + 'px';
+      item.el.style.top = screenY + 'px';
+      item.el.style.transform = 'translate(-50%, -50%)';
+
+      // Hide labels when zoomed out too much
+      const s = state.scale;
+      if (s < 0.6) {
+        item.el.style.fontSize = '0px';
+      } else {
+        item.el.style.fontSize = Math.max(7, Math.min(11, 9 / s)) + 'px';
+      }
+    });
+  }
+
+  function toggleLabels() {
+    state.labelsVisible = !state.labelsVisible;
+    state.labels.forEach(item => {
+      item.el.classList.toggle('labels-visible', state.labelsVisible);
+    });
+    $('#btnLabels').classList.toggle('active', state.labelsVisible);
+  }
+
+  // ================================================================
+  //  SEARCH
+  // ================================================================
+  function setupSearch() {
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      if (q.length < 1) {
+        searchResults.classList.remove('visible');
+        return;
+      }
+
+      const results = state.stands.filter(s =>
+        s.name.toLowerCase().includes(q) ||
+        s.id.toLowerCase().includes(q) ||
+        (s.sector && s.sector.toLowerCase().includes(q)) ||
+        (s.jobs && s.jobs.toLowerCase().includes(q))
+      ).slice(0, 8);
+
+      if (results.length === 0) {
+        searchResults.classList.remove('visible');
+        return;
+      }
+
+      searchResults.innerHTML = results.map(s => {
+        const color = zoneColors[s.zone] || '#888';
+        return `<div class="search-result-item" data-id="${s.id}">
+          <span class="search-result-dot" style="background:${color}"></span>
+          <div class="search-result-info">
+            <div class="search-result-name">${s.name}</div>
+            <div class="search-result-meta">Stand ${s.id} ${s.sector ? '- ' + s.sector : ''}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      searchResults.classList.add('visible');
+
+      // Click on result
+      searchResults.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const id = item.dataset.id;
+          const svgEl = state.svgEl.querySelector('#STAND_' + id);
+          if (svgEl) {
+            selectStand(id, svgEl);
+          }
+          searchResults.classList.remove('visible');
+          searchInput.value = '';
+        });
+      });
+    });
+
+    // Close search on blur
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => searchResults.classList.remove('visible'), 200);
+    });
+
+    searchInput.addEventListener('focus', () => {
+      if (searchInput.value.trim().length > 0) {
+        searchInput.dispatchEvent(new Event('input'));
+      }
+    });
+  }
+
+  // ================================================================
+  //  TOOLBAR
+  // ================================================================
+  function setupToolbar() {
+    $('#btnZoomIn').addEventListener('click', () => {
+      const rect = container.getBoundingClientRect();
+      zoomAtPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, 1.3);
+    });
+
+    $('#btnZoomOut').addEventListener('click', () => {
+      const rect = container.getBoundingClientRect();
+      zoomAtPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, 0.7);
+    });
+
+    $('#btnFitView').addEventListener('click', () => {
+      state.svgEl.style.transition = 'transform 0.4s ease';
+      fitView();
+      setTimeout(() => state.svgEl.style.transition = '', 450);
+    });
+
+    $('#btnResetView').addEventListener('click', () => {
+      state.svgEl.style.transition = 'transform 0.4s ease';
+      resetView();
+      setTimeout(() => state.svgEl.style.transition = '', 450);
+    });
+
+    $('#btnLabels').addEventListener('click', toggleLabels);
+    $('#btnFullscreen').addEventListener('click', toggleFullscreen);
+    $('#btnExportPdf').addEventListener('click', exportPdf);
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      switch (e.key) {
+        case '+':
+        case '=':
+          const rectIn = container.getBoundingClientRect();
+          zoomAtPoint(rectIn.left + rectIn.width / 2, rectIn.top + rectIn.height / 2, 1.2);
+          break;
+        case '-':
+          const rectOut = container.getBoundingClientRect();
+          zoomAtPoint(rectOut.left + rectOut.width / 2, rectOut.top + rectOut.height / 2, 0.8);
+          break;
+        case '0':
+          fitView();
+          break;
+        case 'Escape':
+          deselectStand();
+          break;
+        case 'f':
+          toggleFullscreen();
+          break;
+        case 'l':
+          toggleLabels();
+          break;
+      }
+    });
+  }
+
+  // ================================================================
+  //  ZONE LEGEND
+  // ================================================================
+  function setupLegend() {
+    const legend = $('#zoneLegend');
+    const zones = [
+      { id: 'zone-a', label: 'Zone A - Accueil' },
+      { id: 'zone-b', label: 'Zone B - Interim' },
+      { id: 'zone-c', label: 'Zone C - Entreprises' },
+      { id: 'zone-d', label: 'Zone D - Autres' },
+      { id: 'zone-e', label: 'Zone E - Services' }
+    ];
+
+    legend.innerHTML = zones.map(z =>
+      `<div class="legend-item" data-zone="${z.id}">
+        <span class="legend-dot" style="background:${zoneColors[z.id]}"></span>
+        <span class="legend-label">${z.label}</span>
+      </div>`
+    ).join('');
+
+    // Click to filter/highlight zone
+    let activeZone = null;
+    legend.querySelectorAll('.legend-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const zone = item.dataset.zone;
+        if (activeZone === zone) {
+          // Reset
+          activeZone = null;
+          legend.querySelectorAll('.legend-item').forEach(i => i.classList.remove('legend-dimmed'));
+          state.svgEl.querySelectorAll('[id^="STAND_"]').forEach(el => {
+            el.style.opacity = '';
+            el.classList.remove('stand-highlighted');
+          });
+        } else {
+          activeZone = zone;
+          legend.querySelectorAll('.legend-item').forEach(i => {
+            i.classList.toggle('legend-dimmed', i.dataset.zone !== zone);
+          });
+          // Highlight matching stands
+          state.svgEl.querySelectorAll('[id^="STAND_"]').forEach(el => {
+            const sid = el.id.replace('STAND_', '');
+            const sData = state.stands.find(s => s.id === sid);
+            if (sData && sData.zone === zone) {
+              el.style.opacity = '1';
+              el.classList.add('stand-highlighted');
+            } else {
+              el.style.opacity = '0.25';
+              el.classList.remove('stand-highlighted');
+            }
+          });
+        }
+      });
+    });
+  }
+
+  // ================================================================
+  //  MINIMAP
+  // ================================================================
+  function setupMinimap() {
+    // Clone the main SVG content into minimap (simplified)
+    const clone = state.svgEl.cloneNode(true);
+    // Remove routes from clone
+    const routeGroup = clone.querySelector('#Routes');
+    if (routeGroup) routeGroup.remove();
+    // Insert before viewport rect
+    const vp = minimapSvg.querySelector('#minimapViewport');
+    Array.from(clone.children).forEach(child => {
+      minimapSvg.insertBefore(child.cloneNode(true), vp);
+    });
+
+    updateMinimap();
+
+    // Click minimap to navigate
+    const minimap = $('#minimap');
+    minimap.addEventListener('click', (e) => {
+      const rect = minimap.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width * state.svgOrigW;
+      const y = (e.clientY - rect.top) / rect.height * state.svgOrigH;
+
+      const containerRect = container.getBoundingClientRect();
+      state.panX = containerRect.width / 2 - x * state.scale;
+      state.panY = containerRect.height / 2 - y * state.scale;
+      applyTransform();
+    });
+  }
+
+  function updateMinimap() {
+    const containerRect = container.getBoundingClientRect();
+
+    // Calculate visible area in SVG coordinates
+    const vx = -state.panX / state.scale;
+    const vy = -state.panY / state.scale;
+    const vw = containerRect.width / state.scale;
+    const vh = containerRect.height / state.scale;
+
+    minimapViewport.setAttribute('x', Math.max(0, vx));
+    minimapViewport.setAttribute('y', Math.max(0, vy));
+    minimapViewport.setAttribute('width', Math.min(state.svgOrigW, vw));
+    minimapViewport.setAttribute('height', Math.min(state.svgOrigH, vh));
+  }
+
+  // ================================================================
+  //  FULLSCREEN
+  // ================================================================
+  function toggleFullscreen() {
+    state.isFullscreen = !state.isFullscreen;
+
+    if (state.isFullscreen) {
+      if (wrapper.requestFullscreen) {
+        wrapper.requestFullscreen();
+      } else if (wrapper.webkitRequestFullscreen) {
+        wrapper.webkitRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+
+    $('#btnFullscreen').classList.toggle('active', state.isFullscreen);
+  }
+
+  document.addEventListener('fullscreenchange', () => {
+    state.isFullscreen = !!document.fullscreenElement;
+    wrapper.classList.toggle('fullscreen', state.isFullscreen);
+    $('#btnFullscreen').classList.toggle('active', state.isFullscreen);
+    setTimeout(fitView, 100);
+  });
+
+  // ================================================================
+  //  PDF EXPORT
+  // ================================================================
+  async function exportPdf() {
+    const btn = $('#btnExportPdf');
+    btn.classList.add('active');
+
+    // Temporarily show labels & fit view
+    const prevLabels = state.labelsVisible;
+    if (!prevLabels) {
+      state.labelsVisible = true;
+      state.labels.forEach(item => item.el.classList.add('labels-visible'));
+    }
+
+    // Save current transform
+    const savedScale = state.scale;
+    const savedPanX = state.panX;
+    const savedPanY = state.panY;
+
+    // Fit view for export
+    fitView();
+    wrapper.classList.add('pdf-mode');
+
+    // Wait for render
+    await new Promise(r => setTimeout(r, 300));
+
+    try {
+      const canvas = await html2canvas(wrapper, {
+        backgroundColor: '#1a1a2e',
+        scale: 2,
+        useCORS: true,
+        logging: false
+      });
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+
+      // Add title
+      pdf.setFontSize(18);
+      pdf.setTextColor(26, 26, 46);
+      pdf.text('Forum Jobs d\'ete 2026 - Plan du salon', pdfW / 2, 12, { align: 'center' });
+
+      // Add image
+      const imgW = pdfW - 20;
+      const imgH = (canvas.height / canvas.width) * imgW;
+      const finalH = Math.min(imgH, pdfH - 25);
+      pdf.addImage(imgData, 'PNG', 10, 18, imgW, finalH);
+
+      pdf.save('plan-forum-jobs-2026.pdf');
+    } catch (e) {
+      console.error('PDF export error:', e);
+      alert('Erreur lors de l\'export PDF. Veuillez reessayer.');
+    }
+
+    // Restore state
+    wrapper.classList.remove('pdf-mode');
+    state.scale = savedScale;
+    state.panX = savedPanX;
+    state.panY = savedPanY;
+    applyTransform();
+
+    if (!prevLabels) {
+      state.labelsVisible = false;
+      state.labels.forEach(item => item.el.classList.remove('labels-visible'));
+    }
+
+    btn.classList.remove('active');
+  }
+
+  // ================================================================
+  //  WINDOW RESIZE
+  // ================================================================
+  window.addEventListener('resize', () => {
+    fitView();
+  });
+
+  // ================================================================
+  //  START
+  // ================================================================
+  init();
+
+})();
+</script>
+
+</body>
+</html>

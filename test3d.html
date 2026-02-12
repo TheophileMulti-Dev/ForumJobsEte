@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Test 3D GLB - Forum Jobs d'été 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/shared.css">
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      height: 100vh; overflow: hidden;
+      background: #1a1a2e;
+    }
+
+    #canvas3d {
+      position: fixed;
+      top: 64px; left: 0; right: 0; bottom: 0;
+      width: 100%; height: calc(100vh - 64px);
+      display: block;
+      touch-action: none;
+    }
+
+    /* ========== LOADING SCREEN ========== */
+    .loading-screen {
+      position: fixed; inset: 0;
+      background: #0f0e17;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s;
+    }
+    .loading-screen.fade-out { opacity: 0; pointer-events: none; }
+
+    .loading-spinner {
+      width: 56px; height: 56px;
+      border: 3px solid rgba(255,255,255,0.08);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      margin-top: 20px;
+      color: rgba(255,255,255,0.6);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .loading-progress {
+      margin-top: 12px;
+      width: 200px;
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .loading-progress-bar {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    /* ========== CONTROLS PANEL (bottom) ========== */
+    .controls-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(15,14,23,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 0;
+    }
+
+    .controls-scroll {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 12px 12px 14px;
+      gap: 8px;
+      align-items: center;
+    }
+    .controls-scroll::-webkit-scrollbar { display: none; }
+
+    .ctrl-btn {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.8);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      white-space: nowrap;
+    }
+    .ctrl-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .ctrl-btn.active {
+      background: rgba(67,97,238,0.2);
+      border-color: rgba(67,97,238,0.5);
+      color: white;
+    }
+    .ctrl-btn .cb-icon {
+      font-size: 16px;
+    }
+
+    .ctrl-divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+
+    /* ========== INFO PANEL (top-left) ========== */
+    .info-panel {
+      position: fixed;
+      top: 80px; left: 16px;
+      z-index: 100;
+      background: rgba(15,14,23,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 16px 18px;
+      max-width: 300px;
+      color: white;
+    }
+
+    .info-panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-panel-title .ip-icon {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: rgba(67,97,238,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+
+    .info-panel-stats {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .info-stat {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+    }
+    .info-stat strong {
+      color: rgba(255,255,255,0.9);
+      font-weight: 700;
+    }
+
+    .info-panel-hint {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+    }
+
+    /* ========== MESH INFO (when clicked) ========== */
+    .mesh-tooltip {
+      display: none;
+      position: fixed;
+      background: rgba(15,14,23,0.96);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 18px;
+      z-index: 200;
+      min-width: 240px;
+      max-width: 320px;
+      color: white;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    }
+    .mesh-tooltip.visible { display: block; }
+
+    .mesh-tooltip-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .mesh-tooltip-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .mesh-tooltip-close {
+      background: rgba(255,255,255,0.1);
+      border: none; border-radius: 8px;
+      width: 28px; height: 28px;
+      color: white; font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .mesh-tooltip-close:hover { background: rgba(255,255,255,0.2); }
+
+    .mesh-tooltip-details {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+    }
+    .mesh-tooltip-details strong {
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ========== DEBUG PANEL (top-right) ========== */
+    .debug-panel {
+      position: fixed;
+      top: 80px; right: 16px;
+      z-index: 100;
+      background: rgba(15,14,23,0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px 14px;
+      max-width: 220px;
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+      display: none;
+    }
+    .debug-panel.visible { display: block; }
+    .debug-panel::-webkit-scrollbar { width: 4px; }
+    .debug-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+    .debug-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .debug-mesh-item {
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+    .debug-mesh-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.9);
+    }
+    .debug-mesh-item .dm-icon {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .info-panel {
+        left: 10px; right: 10px;
+        max-width: none;
+      }
+      .debug-panel {
+        right: 10px;
+        max-width: 180px;
+      }
+      .ctrl-btn {
+        padding: 9px 14px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">Chargement du modele 3D...</div>
+  <div class="loading-progress">
+    <div class="loading-progress-bar" id="loadingBar"></div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <span class="logo-dot">F</span>
+      Forum Jobs
+    </a>
+    <button class="topnav-mobile-btn" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    <div class="topnav-links">
+      <a href="index.html">Accueil</a>
+      <a href="plan.html">Plan 2D</a>
+      <a href="liste.html">Liste</a>
+      <a href="vue3d.html">Vue 3D</a>
+      <a href="test3d.html" class="active">Test GLB</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 3D Canvas -->
+<canvas id="canvas3d"></canvas>
+
+<!-- Info Panel (top-left) -->
+<div class="info-panel" id="infoPanel">
+  <div class="info-panel-title">
+    <span class="ip-icon">&#9883;</span>
+    <span>Plan 3D GLB</span>
+  </div>
+  <div class="info-panel-stats" id="infoStats">
+    <span class="info-stat">Chargement...</span>
+  </div>
+  <div class="info-panel-hint">
+    Clic gauche + glisser pour tourner<br>
+    Molette pour zoomer<br>
+    Clic droit + glisser pour deplacer
+  </div>
+</div>
+
+<!-- Debug Panel (top-right) - liste des meshes -->
+<div class="debug-panel" id="debugPanel">
+  <div class="debug-title">Objets du modele</div>
+  <div id="debugMeshList"></div>
+</div>
+
+<!-- Mesh Tooltip (on click) -->
+<div class="mesh-tooltip" id="meshTooltip">
+  <div class="mesh-tooltip-top">
+    <span class="mesh-tooltip-name" id="mtName"></span>
+    <button class="mesh-tooltip-close" onclick="closeMeshTooltip()">&times;</button>
+  </div>
+  <div class="mesh-tooltip-details" id="mtDetails"></div>
+</div>
+
+<!-- Controls (bottom bar) -->
+<div class="controls-bar">
+  <div class="controls-scroll" id="controlsScroll">
+    <button class="ctrl-btn active" data-action="reset" onclick="resetCamera()">
+      <span class="cb-icon">&#8962;</span> Vue d'ensemble
+    </button>
+    <button class="ctrl-btn" data-action="top" onclick="setCameraView('top')">
+      <span class="cb-icon">&#8681;</span> Vue dessus
+    </button>
+    <button class="ctrl-btn" data-action="front" onclick="setCameraView('front')">
+      <span class="cb-icon">&#8680;</span> Vue face
+    </button>
+    <button class="ctrl-btn" data-action="side" onclick="setCameraView('side')">
+      <span class="cb-icon">&#8678;</span> Vue cote
+    </button>
+    <div class="ctrl-divider"></div>
+    <button class="ctrl-btn" id="wireframeBtn" onclick="toggleWireframe()">
+      <span class="cb-icon">&#9670;</span> Wireframe
+    </button>
+    <button class="ctrl-btn" id="debugBtn" onclick="toggleDebug()">
+      <span class="cb-icon">&#9881;</span> Debug
+    </button>
+  </div>
+</div>
+
+<!-- Three.js + GLTFLoader + DRACOLoader + OrbitControls via importmap -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ================================================================
+//  GLOBALS
+// ================================================================
+
+let scene, camera, renderer, controls;
+let modelGroup = null;
+let raycaster, mouse;
+let allMeshes = [];
+let highlightedMesh = null;
+let originalMaterials = new Map();
+let isWireframe = false;
+let isDebugVisible = false;
+
+const canvas = document.getElementById('canvas3d');
+const loadingScreen = document.getElementById('loadingScreen');
+const loadingText = document.getElementById('loadingText');
+const loadingBar = document.getElementById('loadingBar');
+
+// ================================================================
+//  INIT
+// ================================================================
+
+function init() {
+  // Scene
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a1a2e);
+  scene.fog = new THREE.Fog(0x1a1a2e, 80, 200);
+
+  // Camera
+  camera = new THREE.PerspectiveCamera(
+    50,
+    canvas.clientWidth / canvas.clientHeight,
+    0.01,
+    500
+  );
+  camera.position.set(15, 15, 15);
+
+  // Renderer
+  renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true,
+    alpha: false
+  });
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+
+  // Controls (OrbitControls - mobile + desktop friendly)
+  controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.enableZoom = true;
+  controls.zoomSpeed = 1.2;
+  controls.enablePan = true;
+  controls.panSpeed = 0.8;
+  controls.maxPolarAngle = Math.PI / 2 + 0.1; // Slightly below ground allowed
+  controls.minDistance = 1;
+  controls.maxDistance = 100;
+  controls.target.set(0, 0, 0);
+  controls.update();
+
+  // Raycaster
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2();
+
+  // Lights
+  setupLights();
+
+  // Ground grid helper
+  const gridHelper = new THREE.GridHelper(50, 50, 0x333355, 0x222244);
+  gridHelper.position.y = -0.01;
+  scene.add(gridHelper);
+
+  // Axes helper (small, at origin)
+  const axesHelper = new THREE.AxesHelper(3);
+  scene.add(axesHelper);
+
+  // Load model
+  loadGLBModel();
+
+  // Events
+  window.addEventListener('resize', onResize);
+  canvas.addEventListener('click', onCanvasClick);
+  canvas.addEventListener('mousemove', onCanvasMouseMove);
+
+  // Start render loop
+  animate();
+}
+
+// ================================================================
+//  LIGHTS
+// ================================================================
+
+function setupLights() {
+  // Ambient
+  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambient);
+
+  // Hemisphere
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x444466, 0.5);
+  hemi.position.set(0, 50, 0);
+  scene.add(hemi);
+
+  // Main directional
+  const dir = new THREE.DirectionalLight(0xffffff, 1.0);
+  dir.position.set(20, 30, 20);
+  dir.castShadow = true;
+  dir.shadow.mapSize.width = 2048;
+  dir.shadow.mapSize.height = 2048;
+  dir.shadow.camera.near = 0.5;
+  dir.shadow.camera.far = 100;
+  dir.shadow.camera.left = -30;
+  dir.shadow.camera.right = 30;
+  dir.shadow.camera.top = 30;
+  dir.shadow.camera.bottom = -30;
+  dir.shadow.bias = -0.001;
+  scene.add(dir);
+
+  // Fill light
+  const fill = new THREE.DirectionalLight(0x8888ff, 0.3);
+  fill.position.set(-15, 20, -15);
+  scene.add(fill);
+}
+
+// ================================================================
+//  LOAD GLB MODEL (with Draco support)
+// ================================================================
+
+function loadGLBModel() {
+  const loadingManager = new THREE.LoadingManager();
+
+  loadingManager.onProgress = (url, loaded, total) => {
+    const pct = Math.round((loaded / total) * 100);
+    loadingBar.style.width = pct + '%';
+    loadingText.textContent = `Chargement... ${pct}%`;
+  };
+
+  loadingManager.onLoad = () => {
+    loadingText.textContent = 'Pret !';
+    loadingBar.style.width = '100%';
+    setTimeout(() => {
+      loadingScreen.classList.add('fade-out');
+      setTimeout(() => loadingScreen.style.display = 'none', 600);
+    }, 300);
+  };
+
+  loadingManager.onError = (url) => {
+    loadingText.textContent = 'Erreur de chargement: ' + url;
+    loadingBar.style.width = '0%';
+    loadingBar.style.background = '#ef4444';
+  };
+
+  // Draco Loader
+  const dracoLoader = new DRACOLoader(loadingManager);
+  dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/libs/draco/');
+
+  // GLTF Loader
+  const gltfLoader = new GLTFLoader(loadingManager);
+  gltfLoader.setDRACOLoader(dracoLoader);
+
+  gltfLoader.load(
+    'plan/plan.glb',
+    (gltf) => {
+      onModelLoaded(gltf);
+    },
+    (xhr) => {
+      if (xhr.total > 0) {
+        const pct = Math.round((xhr.loaded / xhr.total) * 100);
+        loadingBar.style.width = pct + '%';
+        loadingText.textContent = `Telechargement du modele... ${pct}%`;
+      }
+    },
+    (error) => {
+      console.error('Erreur chargement GLB:', error);
+      loadingText.textContent = 'Erreur: impossible de charger plan.glb';
+      loadingBar.style.background = '#ef4444';
+    }
+  );
+}
+
+// ================================================================
+//  MODEL LOADED CALLBACK
+// ================================================================
+
+function onModelLoaded(gltf) {
+  modelGroup = gltf.scene;
+
+  // Compute bounding box to center the model
+  const box = new THREE.Box3().setFromObject(modelGroup);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+
+  // Center model at origin
+  modelGroup.position.sub(center);
+
+  // Enable shadows on all meshes & collect for raycasting
+  let meshCount = 0;
+  let vertexCount = 0;
+
+  modelGroup.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      allMeshes.push(child);
+      meshCount++;
+
+      // Store original material for highlight restore
+      originalMaterials.set(child.uuid, child.material.clone());
+
+      // Count vertices
+      if (child.geometry) {
+        const posAttr = child.geometry.getAttribute('position');
+        if (posAttr) vertexCount += posAttr.count;
+      }
+    }
+  });
+
+  scene.add(modelGroup);
+
+  // Auto-fit camera to model
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const fov = camera.fov * (Math.PI / 180);
+  let cameraDistance = (maxDim / 2) / Math.tan(fov / 2);
+  cameraDistance *= 1.5; // A bit further back
+
+  camera.position.set(
+    cameraDistance * 0.6,
+    cameraDistance * 0.5,
+    cameraDistance * 0.6
+  );
+  controls.target.set(0, 0, 0);
+  controls.update();
+
+  // Update info panel
+  updateInfoPanel(meshCount, vertexCount, size);
+
+  // Build debug mesh list
+  buildDebugMeshList();
+
+  // Log model info
+  console.log('GLB model loaded!');
+  console.log(`  Meshes: ${meshCount}`);
+  console.log(`  Vertices: ${vertexCount}`);
+  console.log(`  Size: ${size.x.toFixed(2)} x ${size.y.toFixed(2)} x ${size.z.toFixed(2)}`);
+  console.log(`  Center: ${center.x.toFixed(2)}, ${center.y.toFixed(2)}, ${center.z.toFixed(2)}`);
+
+  // Log all mesh names for debugging
+  if (gltf.scene) {
+    console.log('Model hierarchy:');
+    gltf.scene.traverse((child) => {
+      if (child.isMesh) {
+        console.log(`  [Mesh] ${child.name || '(unnamed)'} - geometry: ${child.geometry.getAttribute('position')?.count || 0} verts`);
+      } else if (child.isGroup || child.isObject3D) {
+        console.log(`  [${child.type}] ${child.name || '(unnamed)'}`);
+      }
+    });
+  }
+
+  // Animations (if any)
+  if (gltf.animations && gltf.animations.length > 0) {
+    console.log(`  Animations: ${gltf.animations.length}`);
+    // Could set up AnimationMixer here for future use
+  }
+}
+
+// ================================================================
+//  INFO PANEL
+// ================================================================
+
+function updateInfoPanel(meshCount, vertexCount, size) {
+  const stats = document.getElementById('infoStats');
+  stats.innerHTML = `
+    <span class="info-stat"><strong>${meshCount}</strong> objets</span>
+    <span class="info-stat"><strong>${(vertexCount / 1000).toFixed(1)}k</strong> vertices</span>
+    <span class="info-stat"><strong>${size.x.toFixed(1)}</strong> x <strong>${size.z.toFixed(1)}</strong> m</span>
+  `;
+}
+
+// ================================================================
+//  DEBUG MESH LIST
+// ================================================================
+
+function buildDebugMeshList() {
+  const list = document.getElementById('debugMeshList');
+  list.innerHTML = '';
+
+  allMeshes.forEach((mesh, i) => {
+    const item = document.createElement('div');
+    item.className = 'debug-mesh-item';
+    item.innerHTML = `<span class="dm-icon"></span>${mesh.name || 'mesh_' + i}`;
+    item.onclick = () => {
+      focusOnMesh(mesh);
+      showMeshTooltip(mesh, window.innerWidth / 2, 200);
+    };
+    list.appendChild(item);
+  });
+}
+
+// ================================================================
+//  RAYCASTING & INTERACTION
+// ================================================================
+
+function onCanvasClick(e) {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(allMeshes, false);
+
+  // Restore previous highlight
+  if (highlightedMesh) {
+    const origMat = originalMaterials.get(highlightedMesh.uuid);
+    if (origMat) {
+      highlightedMesh.material = origMat.clone();
+      if (isWireframe) highlightedMesh.material.wireframe = true;
+    }
+    highlightedMesh = null;
+  }
+
+  if (intersects.length > 0) {
+    const mesh = intersects[0].object;
+    highlightMesh(mesh);
+    showMeshTooltip(mesh, e.clientX, e.clientY);
+  } else {
+    closeMeshTooltip();
+  }
+}
+
+function onCanvasMouseMove(e) {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(allMeshes, false);
+  canvas.style.cursor = intersects.length > 0 ? 'pointer' : 'grab';
+}
+
+function highlightMesh(mesh) {
+  highlightedMesh = mesh;
+  mesh.material = mesh.material.clone();
+  mesh.material.emissive = new THREE.Color(0x4361ee);
+  mesh.material.emissiveIntensity = 0.3;
+  if (isWireframe) mesh.material.wireframe = true;
+}
+
+function focusOnMesh(mesh) {
+  // Get mesh world position & bounding box
+  const worldPos = new THREE.Vector3();
+  mesh.getWorldPosition(worldPos);
+  const box = new THREE.Box3().setFromObject(mesh);
+  const meshSize = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(meshSize.x, meshSize.y, meshSize.z);
+  const dist = Math.max(maxDim * 3, 3);
+
+  // Animate to look at this mesh
+  const startPos = camera.position.clone();
+  const endPos = new THREE.Vector3(
+    worldPos.x + dist * 0.5,
+    worldPos.y + dist * 0.4,
+    worldPos.z + dist * 0.5
+  );
+
+  animateCameraTo(endPos, worldPos, 800);
+
+  // Highlight it
+  if (highlightedMesh) {
+    const origMat = originalMaterials.get(highlightedMesh.uuid);
+    if (origMat) {
+      highlightedMesh.material = origMat.clone();
+      if (isWireframe) highlightedMesh.material.wireframe = true;
+    }
+  }
+  highlightMesh(mesh);
+}
+
+// ================================================================
+//  MESH TOOLTIP
+// ================================================================
+
+function showMeshTooltip(mesh, mx, my) {
+  const tooltip = document.getElementById('meshTooltip');
+  document.getElementById('mtName').textContent = mesh.name || '(objet sans nom)';
+
+  let details = '';
+  details += `<strong>Type:</strong> ${mesh.geometry?.type || 'BufferGeometry'}<br>`;
+
+  const posAttr = mesh.geometry?.getAttribute('position');
+  if (posAttr) details += `<strong>Vertices:</strong> ${posAttr.count.toLocaleString()}<br>`;
+
+  const indexAttr = mesh.geometry?.index;
+  if (indexAttr) details += `<strong>Triangles:</strong> ${(indexAttr.count / 3).toLocaleString()}<br>`;
+
+  // Material info
+  if (mesh.material) {
+    details += `<strong>Material:</strong> ${mesh.material.type}<br>`;
+    if (mesh.material.color) {
+      details += `<strong>Couleur:</strong> #${mesh.material.color.getHexString()}<br>`;
+    }
+    if (mesh.material.map) details += `<strong>Texture:</strong> oui<br>`;
+  }
+
+  // World position
+  const wPos = new THREE.Vector3();
+  mesh.getWorldPosition(wPos);
+  details += `<strong>Position:</strong> ${wPos.x.toFixed(2)}, ${wPos.y.toFixed(2)}, ${wPos.z.toFixed(2)}`;
+
+  document.getElementById('mtDetails').innerHTML = details;
+
+  // Position tooltip
+  const tw = 280;
+  let tx = mx + 15, ty = my - 10;
+  if (tx + tw > window.innerWidth) tx = mx - tw - 15;
+  if (ty + 250 > window.innerHeight) ty = window.innerHeight - 260;
+  if (ty < 64) ty = 80;
+
+  tooltip.style.left = tx + 'px';
+  tooltip.style.top = ty + 'px';
+  tooltip.classList.add('visible');
+}
+
+// Make closeMeshTooltip available globally
+window.closeMeshTooltip = function() {
+  document.getElementById('meshTooltip').classList.remove('visible');
+  if (highlightedMesh) {
+    const origMat = originalMaterials.get(highlightedMesh.uuid);
+    if (origMat) {
+      highlightedMesh.material = origMat.clone();
+      if (isWireframe) highlightedMesh.material.wireframe = true;
+    }
+    highlightedMesh = null;
+  }
+};
+
+// ================================================================
+//  CAMERA VIEWS & ANIMATIONS
+// ================================================================
+
+let cameraAnim = null;
+
+function animateCameraTo(targetPos, targetLookAt, duration) {
+  cameraAnim = {
+    startPos: camera.position.clone(),
+    endPos: targetPos.clone(),
+    startTarget: controls.target.clone(),
+    endTarget: targetLookAt.clone(),
+    duration,
+    startTime: performance.now()
+  };
+}
+
+function updateCameraAnim() {
+  if (!cameraAnim) return;
+  const elapsed = performance.now() - cameraAnim.startTime;
+  let t = Math.min(elapsed / cameraAnim.duration, 1);
+  // Cubic ease-in-out
+  t = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  camera.position.lerpVectors(cameraAnim.startPos, cameraAnim.endPos, t);
+  controls.target.lerpVectors(cameraAnim.startTarget, cameraAnim.endTarget, t);
+  controls.update();
+
+  if (t >= 1) cameraAnim = null;
+}
+
+// Camera preset views (accessible from buttons)
+window.resetCamera = function() {
+  if (!modelGroup) return;
+  const box = new THREE.Box3().setFromObject(modelGroup);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const fov = camera.fov * (Math.PI / 180);
+  let dist = (maxDim / 2) / Math.tan(fov / 2) * 1.5;
+
+  animateCameraTo(
+    new THREE.Vector3(dist * 0.6, dist * 0.5, dist * 0.6),
+    new THREE.Vector3(0, 0, 0),
+    800
+  );
+  setActiveCtrlBtn('reset');
+};
+
+window.setCameraView = function(view) {
+  if (!modelGroup) return;
+  const box = new THREE.Box3().setFromObject(modelGroup);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const dist = maxDim * 1.5;
+
+  let pos;
+  switch (view) {
+    case 'top':
+      pos = new THREE.Vector3(0, dist, 0.01);
+      break;
+    case 'front':
+      pos = new THREE.Vector3(0, dist * 0.2, dist);
+      break;
+    case 'side':
+      pos = new THREE.Vector3(dist, dist * 0.2, 0);
+      break;
+    default:
+      pos = new THREE.Vector3(dist * 0.6, dist * 0.5, dist * 0.6);
+  }
+
+  animateCameraTo(pos, new THREE.Vector3(0, 0, 0), 800);
+  setActiveCtrlBtn(view);
+};
+
+function setActiveCtrlBtn(action) {
+  document.querySelectorAll('.ctrl-btn[data-action]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.action === action);
+  });
+}
+
+// ================================================================
+//  TOGGLE FEATURES
+// ================================================================
+
+window.toggleWireframe = function() {
+  isWireframe = !isWireframe;
+  document.getElementById('wireframeBtn').classList.toggle('active', isWireframe);
+
+  allMeshes.forEach(mesh => {
+    mesh.material.wireframe = isWireframe;
+  });
+};
+
+window.toggleDebug = function() {
+  isDebugVisible = !isDebugVisible;
+  document.getElementById('debugBtn').classList.toggle('active', isDebugVisible);
+  document.getElementById('debugPanel').classList.toggle('visible', isDebugVisible);
+};
+
+// ================================================================
+//  RESIZE & ANIMATE
+// ================================================================
+
+function onResize() {
+  camera.aspect = canvas.clientWidth / canvas.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  updateCameraAnim();
+  controls.update(); // Required for damping
+  renderer.render(scene, camera);
+}
+
+// ================================================================
+//  START
+// ================================================================
+
+init();
+
+</script>
+</body>
+</html>

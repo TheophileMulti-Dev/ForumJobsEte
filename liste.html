@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des Stands - Forum Jobs d'été 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/shared.css">
+  <style>
+    body {
+      background: var(--bg-light);
+      padding-top: 64px;
+    }
+
+    /* ========== HERO BANNER ========== */
+    .liste-hero {
+      background: linear-gradient(135deg, #0f0e17 0%, #1a1a2e 50%, #0f0e17 100%);
+      padding: 48px 24px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .liste-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 30% 20%, rgba(67,97,238,0.18), transparent 70%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(247,37,133,0.1), transparent 60%);
+      pointer-events: none;
+    }
+
+    .liste-hero-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .liste-hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      border-radius: 40px;
+      background: rgba(67,97,238,0.15);
+      border: 1px solid rgba(67,97,238,0.25);
+      font-size: 13px;
+      font-weight: 600;
+      color: #818cf8;
+      margin-bottom: 20px;
+    }
+
+    .liste-hero-tag svg {
+      flex-shrink: 0;
+    }
+
+    .liste-hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      color: white;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+
+    .liste-hero p {
+      color: rgba(255,255,255,0.55);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 32px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ========== SEARCH BAR ========== */
+    .search-wrapper {
+      max-width: 540px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 20px 16px 52px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      font-size: 15px;
+      font-family: var(--font);
+      font-weight: 500;
+      transition: all 0.3s;
+      backdrop-filter: blur(8px);
+    }
+
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.35);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 0 4px rgba(67,97,238,0.15), 0 8px 32px rgba(0,0,0,0.2);
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: rgba(255,255,255,0.5);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .search-clear:hover {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .search-clear.visible {
+      display: flex;
+    }
+
+    /* ========== FILTERS SECTION ========== */
+    .filters-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 24px 0;
+    }
+
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .filters-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border: 2px solid var(--border);
+      border-radius: 40px;
+      background: var(--surface);
+      color: var(--text-light);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .filter-chip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .filter-chip.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+
+    .filter-chip .chip-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ========== STATS BAR ========== */
+    .stats-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .stats-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stats-count {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stats-count span {
+      color: var(--primary);
+    }
+
+    .stats-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+    }
+
+    .stats-zones {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stats-zone-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-light);
+    }
+
+    .stats-zone-pill .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .stats-right {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ========== CARDS GRID ========== */
+    .cards-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ========== STAND CARD ========== */
+    .stand-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stand-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+      border-color: transparent;
+    }
+
+    .stand-card-accent {
+      display: none;
+    }
+
+    .stand-card-main {
+      padding: 20px 20px 16px 20px;
+      flex: 1;
+    }
+
+    .stand-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .stand-id-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .stand-age-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .stand-age-badge.age-16 {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .stand-age-badge.age-18 {
+      background: #fce4e4;
+      color: #c41818;
+    }
+
+    .stand-age-badge.age-other {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .stand-card-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .stand-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .stand-sector-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--bg-light);
+      color: var(--text-light);
+      border: 1px solid var(--border);
+    }
+
+    .stand-sector-tag svg {
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+
+    /* ========== EXPANDABLE DETAILS ========== */
+    .stand-card-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .stand-card.expanded .stand-card-details {
+      max-height: 300px;
+    }
+
+    .stand-card-details-inner {
+      padding: 0 20px 0 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .detail-row-label {
+      font-weight: 600;
+      color: var(--text-light);
+      min-width: 56px;
+      flex-shrink: 0;
+    }
+
+    .detail-row-value {
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .detail-description {
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    /* ========== CARD FOOTER ========== */
+    .stand-zone-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 10px;
+    }
+
+    .stand-zone-tag .zone-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .stand-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px 12px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-light);
+    }
+
+    .stand-expand-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .stand-expand-btn:hover {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .stand-expand-btn svg {
+      transition: transform 0.3s;
+    }
+
+    .stand-card.expanded .stand-expand-btn svg {
+      transform: rotate(180deg);
+    }
+
+    .stand-map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .stand-map-link:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(67,97,238,0.3);
+    }
+
+    /* ========== EMPTY STATE ========== */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 32px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 360px;
+      margin: 0 auto 24px;
+      line-height: 1.6;
+    }
+
+    .empty-state-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 24px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .empty-state-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    /* ========== LOADING STATE ========== */
+    .loading-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-state p {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      body { padding-top: 64px; }
+
+      .liste-hero {
+        padding: 40px 16px 36px;
+      }
+
+      .search-input {
+        padding: 14px 16px 14px 46px;
+        font-size: 14px;
+      }
+
+      .filters-section {
+        padding: 20px 16px 0;
+      }
+
+      .filters-row {
+        gap: 8px;
+      }
+
+      .filter-chip {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .stats-bar {
+        padding: 16px;
+      }
+
+      .cards-grid {
+        padding: 0 16px 40px;
+        gap: 16px;
+      }
+
+      .stand-card-main {
+        padding: 16px 16px 12px 16px;
+      }
+
+      .stand-card-footer {
+        padding: 10px 16px 10px 16px;
+      }
+
+      .stand-card-details-inner {
+        padding: 0 16px 0 16px;
+        padding-top: 12px;
+      }
+    }
+
+    /* ========== FOOTER ========== */
+    .liste-footer {
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ========== CARD ENTRY ANIMATION ========== */
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .stand-card {
+      animation: cardIn 0.4s ease both;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <span class="logo-dot">F</span>
+      Forum Jobs
+    </a>
+    <button class="topnav-mobile-btn" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    <div class="topnav-links">
+      <a href="index.html">Accueil</a>
+      <a href="plan.html">Plan 2D</a>
+      <a href="liste.html" class="active">Liste</a>
+      <a href="vue3d.html">Vue 3D</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Banner -->
+<section class="liste-hero">
+  <div class="liste-hero-inner">
+    <div class="liste-hero-tag">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Annuaire complet
+    </div>
+    <h1>Tous les stands</h1>
+    <p>Parcourez la liste de tous les exposants, filtrez par secteur ou tranche d'age, et trouvez le stand qui vous correspond.</p>
+    <div class="search-wrapper">
+      <span class="search-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </span>
+      <input type="text" class="search-input" id="search-input" placeholder="Rechercher par nom, identifiant, secteur, metier..." autocomplete="off">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">&times;</button>
+    </div>
+  </div>
+</section>
+
+<!-- Filters -->
+<section class="filters-section">
+  <!-- Age filters -->
+  <div class="filters-row">
+    <span class="filters-label">Age</span>
+    <button class="filter-chip active" data-age="all" onclick="setAgeFilter(this)">Tous</button>
+    <button class="filter-chip" data-age="16+" onclick="setAgeFilter(this)">16+</button>
+    <button class="filter-chip" data-age="18+" onclick="setAgeFilter(this)">18+</button>
+  </div>
+  <!-- Sector filters (dynamic) -->
+  <div class="filters-row" id="sector-filters">
+    <span class="filters-label">Secteur</span>
+    <button class="filter-chip active" data-sector="all" onclick="setSectorFilter(this)">Tous</button>
+    <!-- Populated by JS -->
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="stats-left">
+    <span class="stats-count" id="stats-count"><span>0</span> stands</span>
+    <span class="stats-divider"></span>
+    <div class="stats-zones" id="stats-zones">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+  <div class="stats-right" id="stats-right"></div>
+</div>
+
+<!-- Cards Grid -->
+<div class="cards-grid" id="cards-grid">
+  <div class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Chargement des stands...</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="liste-footer">
+  Forum Jobs d'ete 2026 &mdash; Organise par Le Kiosk, Mission Locale, France Travail & Tandem
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+(function() {
+  // State
+  let allStands = [];
+  let filteredResults = [];
+  let currentSearch = '';
+  let currentAge = 'all';
+  let currentSector = 'all';
+
+  // Zone colors (matching CSS vars)
+  const ZONE_COLORS = {
+    'zone-a': '#8cc63f',
+    'zone-b': '#29abe2',
+    'zone-c': '#ed1c24',
+    'zone-d': '#f7931e',
+    'zone-e': '#fcee21'
+  };
+
+  const ZONE_BADGE_CLASSES = {
+    'zone-a': 'badge-zone-a',
+    'zone-b': 'badge-zone-b',
+    'zone-c': 'badge-zone-c',
+    'zone-d': 'badge-zone-d',
+    'zone-e': 'badge-zone-e'
+  };
+
+  // Init
+  document.addEventListener('DOMContentLoaded', async () => {
+    allStands = await loadStandsData();
+    buildSectorFilters();
+    applyFilters();
+    setupSearch();
+  });
+
+  // Build dynamic sector filter chips
+  function buildSectorFilters() {
+    const sectors = [...new Set(allStands.map(s => s.sector).filter(Boolean))].sort();
+    const container = document.getElementById('sector-filters');
+    sectors.forEach(sector => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-chip';
+      btn.dataset.sector = sector;
+      btn.textContent = sector;
+      btn.onclick = function() { setSectorFilter(this); };
+      container.appendChild(btn);
+    });
+  }
+
+  // Search setup
+  function setupSearch() {
+    const input = document.getElementById('search-input');
+    const clearBtn = document.getElementById('search-clear');
+    let debounceTimer;
+
+    input.addEventListener('input', function() {
+      clearBtn.classList.toggle('visible', this.value.length > 0);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        currentSearch = this.value.trim().toLowerCase();
+        applyFilters();
+      }, 200);
+    });
+  }
+
+  // Clear search
+  window.clearSearch = function() {
+    const input = document.getElementById('search-input');
+    input.value = '';
+    document.getElementById('search-clear').classList.remove('visible');
+    currentSearch = '';
+    applyFilters();
+    input.focus();
+  };
+
+  // Age filter
+  window.setAgeFilter = function(btn) {
+    document.querySelectorAll('[data-age]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentAge = btn.dataset.age;
+    applyFilters();
+  };
+
+  // Sector filter
+  window.setSectorFilter = function(btn) {
+    document.querySelectorAll('[data-sector]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSector = btn.dataset.sector;
+    applyFilters();
+  };
+
+  // Apply all filters
+  function applyFilters() {
+    filteredResults = allStands.filter(stand => {
+      // Search filter
+      if (currentSearch) {
+        const q = currentSearch;
+        const haystack = [
+          stand.name,
+          stand.id,
+          stand.sector,
+          stand.jobs,
+          stand.description
+        ].join(' ').toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+
+      // Age filter
+      if (currentAge !== 'all') {
+        if (!stand.age) return false;
+        if (currentAge === '16+') {
+          if (!stand.age.includes('16') && !stand.age.includes('11')) return false;
+        }
+        if (currentAge === '18+') {
+          if (!stand.age.includes('18')) return false;
+        }
+      }
+
+      // Sector filter
+      if (currentSector !== 'all') {
+        if (stand.sector !== currentSector) return false;
+      }
+
+      return true;
+    });
+
+    renderCards();
+    updateStats();
+  }
+
+  // Render cards
+  function renderCards() {
+    const grid = document.getElementById('cards-grid');
+
+    if (filteredResults.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+          </div>
+          <h3>Aucun stand trouve</h3>
+          <p>Essayez de modifier vos filtres ou votre recherche pour trouver ce que vous cherchez.</p>
+          <button class="empty-state-btn" onclick="resetAllFilters()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Reinitialiser les filtres
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = '';
+    filteredResults.forEach((stand, i) => {
+      const card = createCard(stand, i);
+      grid.appendChild(card);
+    });
+  }
+
+  // Create a single card
+  function createCard(stand, index) {
+    const zoneInfo = getZoneInfo(stand.zone);
+    const zoneColor = ZONE_COLORS[stand.zone] || '#ccc';
+    const badgeClass = ZONE_BADGE_CLASSES[stand.zone] || '';
+
+    // Age badge
+    let ageBadgeHtml = '';
+    if (stand.age) {
+      let ageClass = 'age-other';
+      if (stand.age.includes('18')) ageClass = 'age-18';
+      else if (stand.age.includes('16')) ageClass = 'age-16';
+      ageBadgeHtml = `<span class="stand-age-badge ${ageClass}">${escapeHtml(stand.age)}</span>`;
+    }
+
+    // Sector tag
+    let sectorHtml = '';
+    if (stand.sector) {
+      sectorHtml = `
+        <span class="stand-sector-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          ${escapeHtml(stand.sector)}
+        </span>
+      `;
+    }
+
+    // Details content
+    let detailsContent = '';
+    if (stand.jobs) {
+      detailsContent += `
+        <div class="detail-row">
+          <span class="detail-row-label">Metiers</span>
+          <span class="detail-row-value">${escapeHtml(stand.jobs)}</span>
+        </div>
+      `;
+    }
+    detailsContent += `
+      <div class="detail-row">
+        <span class="detail-row-label">Zone</span>
+        <span class="detail-row-value">${escapeHtml(zoneInfo.name)} &mdash; ${escapeHtml(zoneInfo.label)}</span>
+      </div>
+    `;
+    if (stand.description) {
+      detailsContent += `
+        <div class="detail-description">${escapeHtml(stand.description)}</div>
+      `;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'stand-card';
+    card.style.animationDelay = `${Math.min(index * 0.04, 0.6)}s`;
+
+    const zoneLabel = zoneInfo.name || '';
+    const zoneBgColor = zoneColor + '18';
+
+    card.innerHTML = `
+      <div class="stand-card-main">
+        <div class="stand-card-top">
+          <span class="stand-id-badge" style="background: ${zoneColor}">${escapeHtml(stand.id)}</span>
+          ${ageBadgeHtml}
+        </div>
+        <div class="stand-card-name">${escapeHtml(stand.name)}</div>
+        <div class="stand-zone-tag" style="background: ${zoneBgColor}; color: ${zoneColor}">
+          <span class="zone-dot" style="background: ${zoneColor}"></span>
+          ${escapeHtml(zoneLabel)}
+        </div>
+        <div class="stand-card-tags">
+          ${sectorHtml}
+        </div>
+      </div>
+      <div class="stand-card-details">
+        <div class="stand-card-details-inner">
+          ${detailsContent}
+        </div>
+      </div>
+      <div class="stand-card-footer">
+        <button class="stand-expand-btn" onclick="toggleCard(this)">
+          Details
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <a href="plan.html#${encodeURIComponent(stand.id)}" class="stand-map-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          Voir sur le plan
+        </a>
+      </div>
+    `;
+
+    return card;
+  }
+
+  // Toggle card expand
+  window.toggleCard = function(btn) {
+    const card = btn.closest('.stand-card');
+    card.classList.toggle('expanded');
+  };
+
+  // Reset all filters
+  window.resetAllFilters = function() {
+    currentSearch = '';
+    currentAge = 'all';
+    currentSector = 'all';
+    document.getElementById('search-input').value = '';
+    document.getElementById('search-clear').classList.remove('visible');
+    document.querySelectorAll('[data-age]').forEach(b => b.classList.toggle('active', b.dataset.age === 'all'));
+    document.querySelectorAll('[data-sector]').forEach(b => b.classList.toggle('active', b.dataset.sector === 'all'));
+    applyFilters();
+  };
+
+  // Update stats bar
+  function updateStats() {
+    // Count
+    const countEl = document.getElementById('stats-count');
+    const count = filteredResults.length;
+    countEl.innerHTML = `<span>${count}</span> stand${count !== 1 ? 's' : ''}`;
+
+    // Zones represented
+    const zonesInResults = [...new Set(filteredResults.map(s => s.zone))];
+    const zonesContainer = document.getElementById('stats-zones');
+    zonesContainer.innerHTML = '';
+    zonesInResults.sort().forEach(zone => {
+      const info = getZoneInfo(zone);
+      const color = ZONE_COLORS[zone] || '#ccc';
+      const zoneCount = filteredResults.filter(s => s.zone === zone).length;
+      const pill = document.createElement('span');
+      pill.className = 'stats-zone-pill';
+      pill.innerHTML = `<span class="pill-dot" style="background:${color}"></span>${info.name} (${zoneCount})`;
+      zonesContainer.appendChild(pill);
+    });
+
+    // Right side info
+    const rightEl = document.getElementById('stats-right');
+    const totalZones = [...new Set(allStands.map(s => s.zone))].length;
+    const shownZones = zonesInResults.length;
+    rightEl.textContent = `${shownZones}/${totalZones} zones representees`;
+  }
+
+  // Escape HTML
+  function escapeHtml(text) {
+    if (!text) return '';
+    const el = document.createElement('span');
+    el.textContent = text;
+    return el.innerHTML;
+  }
+})();
+</script>
+</body>
+</html>
